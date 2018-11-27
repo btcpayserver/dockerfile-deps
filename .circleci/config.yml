@@ -40,6 +40,39 @@ jobs:
             sudo docker build --pull -t $DOCKERHUB_DESTINATION -f "$DOCKERHUB_DOCKEFILE" "$NODE_NAME/$NODE_VERSION"
             sudo docker push $DOCKERHUB_DESTINATION
 
+  publish_linuxarm64v8:
+    machine:
+      docker_layer_caching: true
+    steps:
+      - checkout  
+      - run:
+          command: |
+            # If CIRCLE_TAG is "BitcoinCore/0.17.0"
+            # Then:
+            # $SEPARATOR=12
+            # $NODE_NAME=BitcoinCore
+            # $NODE_VERSION=0.17.0
+            # $LATEST_TAG=0.17.0
+            SEPARATOR=$(expr index "$CIRCLE_TAG" "/")
+            NODE_NAME=${CIRCLE_TAG:0:$SEPARATOR-1}
+            LATEST_TAG="${CIRCLE_TAG:$SEPARATOR}"
+            NODE_VERSION="$LATEST_TAG"
+            DOCKERHUB_REPO="btcpayserver/$NODE_NAME"
+            DOCKERHUB_REPO="${DOCKERHUB_REPO,,}"
+            DOCKERHUB_DESTINATION="$DOCKERHUB_REPO:$LATEST_TAG-arm64v8"
+            DOCKERHUB_DOCKEFILE="$NODE_NAME/$NODE_VERSION/linuxarm64v8.Dockerfile"
+            #
+            # Make sure the builder is copy the arm emulator
+            sudo docker run --rm --privileged multiarch/qemu-user-static:register --reset
+            sudo apt update
+            sudo apt install -y qemu qemu-user-static qemu-user binfmt-support
+            sudo cp /usr/bin/qemu-arm-static "$(dirname "$DOCKERHUB_DOCKEFILE")/qemu-arm-static"
+            sed -i -e 's/#EnableQEMU //g' "$DOCKERHUB_DOCKEFILE"
+            #
+            echo "Pushing $DOCKERHUB_DOCKEFILE to dockerhub repository $DOCKERHUB_DESTINATION"
+            sudo docker login --username=$DOCKERHUB_USER --password=$DOCKERHUB_PASS
+            sudo docker build --pull -t $DOCKERHUB_DESTINATION -f "$DOCKERHUB_DOCKEFILE" "$NODE_NAME/$NODE_VERSION"
+            sudo docker push $DOCKERHUB_DESTINATION
   publish_linuxarm32v7:
     machine:
       docker_layer_caching: true
@@ -73,7 +106,6 @@ jobs:
             sudo docker login --username=$DOCKERHUB_USER --password=$DOCKERHUB_PASS
             sudo docker build --pull -t $DOCKERHUB_DESTINATION -f "$DOCKERHUB_DOCKEFILE" "$NODE_NAME/$NODE_VERSION"
             sudo docker push $DOCKERHUB_DESTINATION
-
   publish_multiarch:
     machine:
       enabled: true
@@ -122,10 +154,18 @@ workflows:
             tags:
               # Example: BitcoinCore/0.17.0
               only: /^[^/]+[/][0-9]+(\.[0-9]+)*/
+      - publish_linuxarm64v8:
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              # Example: BitcoinCore/0.17.0
+              only: /^[^/]+[/][0-9]+(\.[0-9]+)*/
       - publish_multiarch:
           requires:
             - publish_linuxamd64
             - publish_linuxarm32v7
+            - publish_linuxarm64v8
           filters:
             branches:
               ignore: /.*/
