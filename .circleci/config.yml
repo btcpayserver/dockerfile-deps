@@ -66,7 +66,7 @@ jobs:
             sudo docker run --rm --privileged multiarch/qemu-user-static:register --reset
             sudo apt update
             sudo apt install -y qemu qemu-user-static qemu-user binfmt-support
-            sudo cp /usr/bin/qemu-arm-static "$(dirname "$DOCKERHUB_DOCKEFILE")/qemu-arm-static"
+            sudo cp /usr/bin/qemu-aarch64-static "$(dirname "$DOCKERHUB_DOCKEFILE")/qemu-aarch64-static"
             sed -i -e 's/#EnableQEMU //g' "$DOCKERHUB_DOCKEFILE"
             #
             echo "Pushing $DOCKERHUB_DOCKEFILE to dockerhub repository $DOCKERHUB_DESTINATION"
@@ -131,9 +131,10 @@ jobs:
             DOCKERHUB_DESTINATION="$DOCKERHUB_REPO:$LATEST_TAG"
             #
             sudo docker login --username=$DOCKERHUB_USER --password=$DOCKERHUB_PASS
-            sudo docker manifest create --amend $DOCKERHUB_DESTINATION $DOCKERHUB_DESTINATION-amd64 $DOCKERHUB_DESTINATION-arm32v7
+            sudo docker manifest create --amend $DOCKERHUB_DESTINATION $DOCKERHUB_DESTINATION-amd64 $DOCKERHUB_DESTINATION-arm32v7 $DOCKERHUB_DESTINATION-arm64v8
             sudo docker manifest annotate $DOCKERHUB_DESTINATION $DOCKERHUB_DESTINATION-amd64 --os linux --arch amd64
             sudo docker manifest annotate $DOCKERHUB_DESTINATION $DOCKERHUB_DESTINATION-arm32v7 --os linux --arch arm --variant v7
+            sudo docker manifest annotate $DOCKERHUB_DESTINATION $DOCKERHUB_DESTINATION-arm64v8 --os linux --arch arm64 --variant v8
             sudo docker manifest push $DOCKERHUB_DESTINATION -p
 
 workflows:
