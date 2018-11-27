@@ -14,14 +14,15 @@ RUN set -ex \
 	&& wget -qO bitcoin.tar.gz "$BITCOIN_URL" \
 	&& echo "$BITCOIN_SHA256 bitcoin.tar.gz" | sha256sum -c - \
 	&& mkdir bin \
-	&& tar -xzvf bitcoin.tar.gz -C /tmp/bin --strip-components=2 "bitcoin-$BITCOIN_VERSION/bin/bitcoin-cli" "bitcoin-$BITCOIN_VERSION/bin/bitcoind"
+	&& tar -xzvf bitcoin.tar.gz -C /tmp/bin --strip-components=2 "bitcoin-$BITCOIN_VERSION/bin/bitcoin-cli" "bitcoin-$BITCOIN_VERSION/bin/bitcoind" \
+	&& cd bin \
+	&& wget -qO gosu "https://github.com/tianon/gosu/releases/download/1.11/gosu-amd64" \
+	&& echo "0b843df6d86e270c5b0f5cbd3c326a04e18f4b7f9b8457fa497b0454c4b138d7 gosu" | sha256sum -c -
 
 FROM debian:stretch-slim
 COPY --from=builder "/tmp/bin" /usr/local/bin
 
-RUN apt-get update && apt-get install -qq --no-install-recommends gosu && rm -rf /var/lib/apt/lists/*
-
-RUN groupadd -r bitcoin && useradd -r -m -g bitcoin bitcoin
+RUN chmod +x /usr/local/bin/gosu && groupadd -r bitcoin && useradd -r -m -g bitcoin bitcoin
 
 # create data directory
 ENV BITCOIN_DATA /data
