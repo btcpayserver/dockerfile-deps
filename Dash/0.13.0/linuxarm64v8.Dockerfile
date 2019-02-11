@@ -5,7 +5,7 @@ RUN set -ex \
 	&& apt-get update \
 	&& apt-get install -qq --no-install-recommends ca-certificates dirmngr gosu gpg wget
 
-ENV DASH_VERSION 0.13.0.0
+ENV DASH_VERSION 0.13.0
 ENV DASH_URL https://github.com/dashpay/dash/releases/download/v0.13.0.0/dashcore-0.13.0.0-aarch64-linux-gnu.tar.gz
 ENV DASH_SHA256 48daaa2df45c0b9b44e3ed9d9ecbf184a46c3c40422417a6ab41162b04013ebb
 ENV DASH_ASC_URL https://github.com/dashpay/dash/releases/download/v0.13.0.0/SHA256SUMS.asc
