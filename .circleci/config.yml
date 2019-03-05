@@ -61,6 +61,7 @@ jobs:
             DOCKERHUB_REPO="${DOCKERHUB_REPO,,}"
             DOCKERHUB_DESTINATION="$DOCKERHUB_REPO:$LATEST_TAG-arm64v8"
             DOCKERHUB_DOCKEFILE="$NODE_NAME/$NODE_VERSION/linuxarm64v8.Dockerfile"
+            if [ -f $DOCKERHUB_DOCKEFILE ]; then
             #
             # Make sure the builder is copy the arm emulator
             sudo docker run --rm --privileged multiarch/qemu-user-static:register --reset
@@ -73,6 +74,9 @@ jobs:
             sudo docker login --username=$DOCKERHUB_USER --password=$DOCKERHUB_PASS
             sudo docker build --pull -t $DOCKERHUB_DESTINATION -f "$DOCKERHUB_DOCKEFILE" "$NODE_NAME/$NODE_VERSION"
             sudo docker push $DOCKERHUB_DESTINATION
+            else
+            echo "Skipping linuxarm64v8 because $DOCKERHUB_DOCKEFILE is not found"
+            fi
   publish_linuxarm32v7:
     machine:
       docker_layer_caching: true
