@@ -97,7 +97,7 @@ RUN apt-get install -y pkg-config && wget -q https://www.torproject.org/dist/tor
     --enable-zstd --enable-lzma \
     --disable-systemd --disable-seccomp --disable-unittests --disable-tool-name-check \
 && make \
-&& make install && cd .. && rm $TAR_NAME && rm -rf $FOLDER_NAME
+&& make install && cd .. && rm $TAR_NAME && rm -rf $FOLDER_NAME && ${STRIP} /usr/arm-linux-gnueabihf/bin/tor*
 
 FROM arm32v7/debian:stretch-slim
 ENV target_host=arm-linux-gnueabihf

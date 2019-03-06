@@ -3,6 +3,7 @@ set -e
 
 cat <<-EOF > "$TOR_CONFIG"
 ControlPort 0.0.0.0:9051
+SOCKSPort 0.0.0.0:9050
 CookieAuthentication 1
 ${TOR_EXTRA_ARGS}
 EOF
