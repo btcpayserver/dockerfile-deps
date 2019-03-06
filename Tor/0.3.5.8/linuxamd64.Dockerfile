@@ -40,7 +40,7 @@ RUN apk --no-cache add --update \
         gpg --verify $TOR_TARBALL_NAME.asc \
       && tar xf $TOR_TARBALL_NAME \
       && cd tor-$TOR_VERSION \
-      && ./configure \
+      && ./configure --disable-unittests \
       && make install \
       && ls -R /usr/local/
       # Main files created (plus docs):
