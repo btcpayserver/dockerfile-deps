@@ -1,9 +1,13 @@
-FROM debian:stretch-slim as qemu-download
+FROM debian:stretch-slim as download
 
 RUN set -ex \
 	&& apt-get update \
 	&& apt-get install -qq --no-install-recommends ca-certificates dirmngr wget \
      qemu qemu-user-static qemu-user binfmt-support
+
+WORKDIR /tmp/bin
+RUN wget -qO gosu "https://github.com/tianon/gosu/releases/download/1.11/gosu-armhf" \
+	  && echo "171b4a2decc920de0dd4f49278d3e14712da5fa48de57c556f99bcdabe03552e gosu" | sha256sum -c -
 
 FROM debian:stretch-slim as tor-build
 
@@ -60,8 +64,12 @@ RUN wget -q https://www.torproject.org/dist/tor-0.3.5.8.tar.gz \
 
 FROM arm32v7/debian:stretch-slim
 
-COPY --from=qemu-download /usr/bin/qemu-arm-static /usr/bin/qemu-arm-static
+COPY --from=download /usr/bin/qemu-arm-static /usr/bin/qemu-arm-static
+COPY --from=download "/tmp/bin" /usr/local/bin
 COPY --from=tor-build /usr/arm-linux-gnueabihf/bin/tor* /usr/bin/
+COPY --from=tor-build /usr/arm-linux-gnueabihf/share/tor/ /usr/bin/share/tor/
+
+RUN chmod +x /usr/local/bin/gosu && groupadd -r tor && useradd -r -m -g tor tor
 
 # Persist data
 VOLUME /etc/tor /var/lib/tor

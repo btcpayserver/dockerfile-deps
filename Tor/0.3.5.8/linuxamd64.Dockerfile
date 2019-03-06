@@ -52,6 +52,10 @@ RUN apk --no-cache add --update \
         # /usr/local/share/tor/geoip6
         # /usr/local/etc/tor/torrc.sample
 
+WORKDIR /tmp/bin
+RUN wget -qO gosu "https://github.com/tianon/gosu/releases/download/1.11/gosu-amd64" \
+	&& echo "0b843df6d86e270c5b0f5cbd3c326a04e18f4b7f9b8457fa497b0454c4b138d7 gosu" | sha256sum -c -
+
 FROM alpine:3.7
 
 
@@ -64,10 +68,13 @@ RUN apk --no-cache add --update \
       zstd
 
 # Copy Tor
+COPY --from=tor-build "/tmp/bin" /usr/local/bin
 COPY --from=tor-build /usr/local/ /usr/local/
 
 # Persist data
 VOLUME /etc/tor /var/lib/tor
+
+RUN chmod +x /usr/local/bin/gosu && groupadd -r tor && useradd -r -m -g tor tor
 
 COPY docker-entrypoint.sh /entrypoint.sh
 
