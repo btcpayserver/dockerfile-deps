@@ -68,7 +68,7 @@ RUN apt-get install -y autopoint && wget -q https://jaist.dl.sourceforge.net/pro
 && tar xvf $TAR_NAME \
 && cd $FOLDER_NAME \
 && ./autogen.sh \
-&& ./configure --disable-shared --enable-static --disable-doc --disable-scripts --disable-xz --disable-xzdec --disable-lzmadec \
+&& ./configure --host=${target_host} --disable-shared --enable-static --disable-doc --disable-scripts --disable-xz --disable-xzdec --disable-lzmadec \
                                         --disable-lzmainfo --disable-lzma-links \
 && make \
 && make install \
