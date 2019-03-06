@@ -42,7 +42,8 @@ RUN apk --no-cache add --update \
       && cd tor-$TOR_VERSION \
       && ./configure --disable-unittests \
       && make install \
-      && ls -R /usr/local/
+      && ls -R /usr/local/ \
+      && strip /usr/local/bin/tor-* && strip /usr/local/bin/tor
       # Main files created (plus docs):
         # /usr/local/bin/tor
         # /usr/local/bin/tor-gencert
