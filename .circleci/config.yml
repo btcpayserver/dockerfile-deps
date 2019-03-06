@@ -101,10 +101,12 @@ jobs:
             #
             # Make sure the builder is copy the arm emulator
             sudo docker run --rm --privileged multiarch/qemu-user-static:register --reset
+            if grep "#EnableQEMU" $DOCKERHUB_DOCKEFILE; then
             sudo apt update
             sudo apt install -y qemu qemu-user-static qemu-user binfmt-support
             sudo cp /usr/bin/qemu-arm-static "$(dirname "$DOCKERHUB_DOCKEFILE")/qemu-arm-static"
             sed -i -e 's/#EnableQEMU //g' "$DOCKERHUB_DOCKEFILE"
+            fi
             #
             echo "Pushing $DOCKERHUB_DOCKEFILE to dockerhub repository $DOCKERHUB_DESTINATION"
             sudo docker login --username=$DOCKERHUB_USER --password=$DOCKERHUB_PASS
