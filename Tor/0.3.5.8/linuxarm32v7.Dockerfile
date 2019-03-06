@@ -77,6 +77,6 @@ COPY docker-entrypoint.sh /entrypoint.sh
 
 # SOCKS5, TOR control
 EXPOSE 9050 9051
-
+ENV TOR_CONFIG=/home/tor/.torrc
 ENTRYPOINT ["./entrypoint.sh"]
 CMD ["tor"]
