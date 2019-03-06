@@ -74,7 +74,7 @@ COPY --from=tor-build /usr/local/ /usr/local/
 # Persist data
 VOLUME /etc/tor /var/lib/tor
 
-RUN chmod +x /usr/local/bin/gosu && groupadd -r tor && useradd -r -m -g tor tor
+RUN chmod +x /usr/local/bin/gosu && addgroup -g 19001 -S tor && adduser -u 19001 -G tor -S tor
 
 COPY docker-entrypoint.sh /entrypoint.sh
 
