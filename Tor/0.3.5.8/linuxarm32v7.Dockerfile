@@ -29,48 +29,66 @@ QEMU_LD_PREFIX=/usr/${target_host} \
 HOST=${target_host}
 
 RUN wget -q https://zlib.net/zlib-1.2.11.tar.gz \
-&& tar xvf zlib-1.2.11.tar.gz \
-&& cd zlib-1.2.11 \
+&& TAR_NAME=zlib-1.2.11.tar.gz \
+&& FOLDER_NAME=zlib-1.2.11 \
+&& echo "c3e5e9fdd5004dcb542feda5ee4f0ff0744628baf8ed2dd5d66f8ca1197cb1a1 $TAR_NAME" | sha256sum -c - \
+&& tar xvf $TAR_NAME \
+&& cd $FOLDER_NAME \
 && ./configure --prefix=$QEMU_LD_PREFIX \
 && make \
-&& make install && cd .. && rm zlib-1.2.11.tar.gz && rm -rf zlib-1.2.11
+&& make install && cd .. && rm $TAR_NAME && rm -rf $FOLDER_NAME
 
 RUN wget -q https://github.com/openssl/openssl/archive/OpenSSL_1_0_2r.tar.gz \
-&& tar xvf OpenSSL_1_0_2r.tar.gz \
-&& cd openssl-OpenSSL_1_0_2r \
+&& TAR_NAME=OpenSSL_1_0_2r.tar.gz \
+&& FOLDER_NAME=openssl-OpenSSL_1_0_2r \
+&& echo "a53acc4648e1375f989501a17d11c179b4a2c6ed8d697cae758c1fe56bb4a0ef $TAR_NAME" | sha256sum -c - \
+&& tar xvf $TAR_NAME \
+&& cd $FOLDER_NAME \
 && ./Configure --prefix=$QEMU_LD_PREFIX linux-armv4 -march=armv7 no-shared no-dso no-zlib no-asm \
 && make \
-&& make install && cd .. && rm OpenSSL_1_0_2r.tar.gz && rm -rf openssl-OpenSSL_1_0_2r
+&& make install && cd .. && rm $TAR_NAME && rm -rf $FOLDER_NAME
 
 RUN wget -q https://github.com/libevent/libevent/releases/download/release-2.1.8-stable/libevent-2.1.8-stable.tar.gz \
-&& tar xvf libevent-2.1.8-stable.tar.gz \
-&& cd libevent-2.1.8-stable \
+&& TAR_NAME=libevent-2.1.8-stable.tar.gz \
+&& FOLDER_NAME=libevent-2.1.8-stable \
+&& echo "965cc5a8bb46ce4199a47e9b2c9e1cae3b137e8356ffdad6d94d3b9069b71dc2 $TAR_NAME" | sha256sum -c - \
+&& tar xvf $TAR_NAME \
+&& cd $FOLDER_NAME \
 && ./autogen.sh \
 && ./configure --prefix=$QEMU_LD_PREFIX --host=${target_host} --disable-shared --enable-static --with-pic --disable-samples --disable-libevent-regress \
 && make \
-&& make install && cd .. && rm libevent-2.1.8-stable.tar.gz && rm -rf libevent-2.1.8-stable
+&& make install && cd .. && rm $TAR_NAME && rm -rf $FOLDER_NAME
 
 # For lzma and zstd, we do not override prefix because those are discovered thanks to pkg-config during Tor build
 # I did not managed to make pkg-config discover pkg on a different prefix...
 RUN apt-get install -y autopoint && wget -q https://jaist.dl.sourceforge.net/project/lzmautils/xz-5.2.3.tar.gz \
-&& tar xvf xz-5.2.3.tar.gz \
-&& cd xz-5.2.3 \
+&& TAR_NAME=xz-5.2.3.tar.gz \
+&& FOLDER_NAME=xz-5.2.3 \
+&& echo "71928b357d0a09a12a4b4c5fafca8c31c19b0e7d3b8ebb19622e96f26dbf28cb $TAR_NAME" | sha256sum -c - \
+&& tar xvf $TAR_NAME \
+&& cd $FOLDER_NAME \
 && ./autogen.sh \
 && ./configure --disable-shared --enable-static --disable-doc --disable-scripts --disable-xz --disable-xzdec --disable-lzmadec \
                                         --disable-lzmainfo --disable-lzma-links \
 && make \
 && make install \
-&& cd .. && rm xz-5.2.3.tar.gz && rm -rf xz-5.2.3
+&& make install && cd .. && rm $TAR_NAME && rm -rf $FOLDER_NAME
 
 RUN wget -q https://github.com/facebook/zstd/archive/v1.3.2.tar.gz \
-&& tar xvf v1.3.2.tar.gz \
-&& cd zstd-1.3.2 \
+&& TAR_NAME=v1.3.2.tar.gz \
+&& FOLDER_NAME=zstd-1.3.2 \
+&& echo "ac5054a3c64e6510bc1ae890d05e3d271cc33ceebc9d06ac9f08105766d2798a $TAR_NAME" | sha256sum -c - \
+&& tar xvf $TAR_NAME \
+&& cd $FOLDER_NAME \
 && make \
-&& make install && cd .. && rm v1.3.2.tar.gz && rm -rf zstd-1.3.2
+&& make install && cd .. && rm $TAR_NAME && rm -rf $FOLDER_NAME
 
 RUN apt-get install -y pkg-config && wget -q https://www.torproject.org/dist/tor-0.3.5.8.tar.gz \
-&& tar xvf tor-0.3.5.8.tar.gz \
-&& cd tor-0.3.5.8 \
+&& TAR_NAME=tor-0.3.5.8.tar.gz \
+&& FOLDER_NAME=tor-0.3.5.8 \
+&& echo "d5c56603942a8927670f50a4a469fb909e29d3571fdd013389d567e57abc0b47 $TAR_NAME" | sha256sum -c - \
+&& tar xvf $TAR_NAME \
+&& cd $FOLDER_NAME \
 && ./configure --prefix=$QEMU_LD_PREFIX --host=${target_host} --disable-gcc-hardening --disable-system-torrc --disable-asciidoc \
     --enable-static-tor \
     --enable-static-libevent --with-libevent-dir=$QEMU_LD_PREFIX \
@@ -79,7 +97,7 @@ RUN apt-get install -y pkg-config && wget -q https://www.torproject.org/dist/tor
     --enable-zstd --enable-lzma \
     --disable-systemd --disable-seccomp --disable-unittests \
 && make \
-&& make install && cd .. && rm tor-0.3.5.8.tar.gz && rm -rf tor-0.3.5.8
+&& make install && cd .. && rm $TAR_NAME && rm -rf $FOLDER_NAME
 
 FROM arm32v7/debian:stretch-slim
 ENV target_host=arm-linux-gnueabihf
