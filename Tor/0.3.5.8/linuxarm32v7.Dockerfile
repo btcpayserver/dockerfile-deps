@@ -50,7 +50,25 @@ RUN wget -q https://github.com/libevent/libevent/releases/download/release-2.1.8
 && make \
 && make install && cd .. && rm libevent-2.1.8-stable.tar.gz && rm -rf libevent-2.1.8-stable
 
-RUN wget -q https://www.torproject.org/dist/tor-0.3.5.8.tar.gz \
+# For lzma and zstd, we do not override prefix because those are discovered thanks to pkg-config during Tor build
+# I did not managed to make pkg-config discover pkg on a different prefix...
+RUN apt-get install -y autopoint && wget -q https://jaist.dl.sourceforge.net/project/lzmautils/xz-5.2.3.tar.gz \
+&& tar xvf xz-5.2.3.tar.gz \
+&& cd xz-5.2.3 \
+&& ./autogen.sh \
+&& ./configure --disable-shared --enable-static --disable-doc --disable-scripts --disable-xz --disable-xzdec --disable-lzmadec \
+                                        --disable-lzmainfo --disable-lzma-links \
+&& make \
+&& make install \
+&& cd .. && rm xz-5.2.3.tar.gz && rm -rf xz-5.2.3
+
+RUN wget -q https://github.com/facebook/zstd/archive/v1.3.2.tar.gz \
+&& tar xvf v1.3.2.tar.gz \
+&& cd zstd-1.3.2 \
+&& make \
+&& make install && cd .. && rm v1.3.2.tar.gz && rm -rf zstd-1.3.2
+
+RUN apt-get install -y pkg-config && wget -q https://www.torproject.org/dist/tor-0.3.5.8.tar.gz \
 && tar xvf tor-0.3.5.8.tar.gz \
 && cd tor-0.3.5.8 \
 && ./configure --prefix=$QEMU_LD_PREFIX --host=${target_host} --disable-gcc-hardening --disable-system-torrc --disable-asciidoc \
@@ -58,7 +76,8 @@ RUN wget -q https://www.torproject.org/dist/tor-0.3.5.8.tar.gz \
     --enable-static-libevent --with-libevent-dir=$QEMU_LD_PREFIX \
     --enable-static-openssl --with-openssl-dir=$QEMU_LD_PREFIX \
     --enable-static-zlib --with-zlib-dir=$QEMU_LD_PREFIX \
-    --disable-systemd --disable-lzma --disable-seccomp --disable-unittests --disable-zstd-advanced-apis \
+    --enable-zstd --enable-lzma \
+    --disable-systemd --disable-seccomp --disable-unittests \
 && make \
 && make install && cd .. && rm tor-0.3.5.8.tar.gz && rm -rf tor-0.3.5.8
 
