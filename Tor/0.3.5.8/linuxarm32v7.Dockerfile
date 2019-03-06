@@ -108,10 +108,10 @@ COPY --from=download "/tmp/bin" /usr/local/bin
 COPY --from=tor-build /usr/arm-linux-gnueabihf/bin/tor* /usr/bin/
 COPY --from=tor-build ${QEMU_LD_PREFIX}/share/tor/ ${QEMU_LD_PREFIX}/share/tor/
 
-RUN chmod +x /usr/local/bin/gosu && groupadd -r tor && useradd -r -m -g tor tor
+RUN chmod +x /usr/local/bin/gosu && groupadd -r tor && useradd -r -m -g tor tor && mkdir /home/tor/.tor
 
-# Persist data
-VOLUME /etc/tor /var/lib/tor
+ENV TOR_DATA=/home/tor/.tor
+VOLUME /home/tor/.tor
 COPY docker-entrypoint.sh /entrypoint.sh
 
 # SOCKS5, TOR control

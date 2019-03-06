@@ -72,11 +72,10 @@ RUN apk --no-cache add --update \
 COPY --from=tor-build "/tmp/bin" /usr/local/bin
 COPY --from=tor-build /usr/local/ /usr/local/
 
-# Persist data
-VOLUME /etc/tor /var/lib/tor
+RUN chmod +x /usr/local/bin/gosu && addgroup -g 19001 -S tor && adduser -u 19001 -G tor -S tor && mkdir /home/tor/.tor
 
-RUN chmod +x /usr/local/bin/gosu && addgroup -g 19001 -S tor && adduser -u 19001 -G tor -S tor
-
+ENV TOR_DATA=/home/tor/.tor
+VOLUME /home/tor/.tor
 COPY docker-entrypoint.sh /entrypoint.sh
 
 # SOCKS5, TOR control
