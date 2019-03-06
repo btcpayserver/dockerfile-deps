@@ -54,7 +54,7 @@ RUN apk --no-cache add --update \
 
 WORKDIR /tmp/bin
 RUN wget -qO gosu "https://github.com/tianon/gosu/releases/download/1.11/gosu-amd64" \
-	&& echo "0b843df6d86e270c5b0f5cbd3c326a04e18f4b7f9b8457fa497b0454c4b138d7 gosu" | sha256sum -c -
+	&& echo "0b843df6d86e270c5b0f5cbd3c326a04e18f4b7f9b8457fa497b0454c4b138d7  gosu" | sha256sum -c -
 
 FROM alpine:3.7
 
