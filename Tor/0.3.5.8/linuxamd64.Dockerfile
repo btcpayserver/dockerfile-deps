@@ -64,7 +64,7 @@ RUN apk --no-cache add --update \
       zstd
 
 # Copy Tor
-COPY --from=tor-build /usr/local/tor* /usr/local/
+COPY --from=tor-build /usr/local/ /usr/local/
 
 # Persist data
 VOLUME /etc/tor /var/lib/tor
