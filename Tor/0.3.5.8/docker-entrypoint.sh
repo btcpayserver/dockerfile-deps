@@ -1,4 +1,4 @@
 #!/bin/sh
 set -e
 
-exec gosu "$@"
+exec gosu tor "$@"
