@@ -66,8 +66,9 @@ COPY --from=tor-build /usr/arm-linux-gnueabihf/bin/tor* /usr/bin/
 # Persist data
 VOLUME /etc/tor /var/lib/tor
 COPY docker-entrypoint.sh /entrypoint.sh
-# ORPort, DirPort, SocksPort, ObfsproxyPort, MeekPort
-EXPOSE 9001 9030 9050 54444 7002
+
+# SOCKS5, TOR control
+EXPOSE 9050 9051
 
 ENTRYPOINT ["./entrypoint.sh"]
 CMD ["tor"]

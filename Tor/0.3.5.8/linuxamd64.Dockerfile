@@ -1,12 +1,5 @@
 # Thanks to https://hub.docker.com/r/chriswayg/tor-alpine/dockerfile (Christian chriswayg@gmail.com)
 # Dockerfile for Tor Relay Server with obfs4proxy (Multi-Stage build)
-FROM golang:alpine3.7 AS go-build
-
-# Build /go/bin/obfs4proxy & /go/bin/meek-server
-RUN apk --no-cache add --update git \
- && go get -v git.torproject.org/pluggable-transports/obfs4.git/obfs4proxy \
- && go get -v git.torproject.org/pluggable-transports/meek.git/meek-server \
- && cp -rv /go/bin /usr/local/
 
 FROM alpine:3.7 AS tor-build
 ARG TOR_GPG_KEY=0x6AFEE6D49E92B601
@@ -62,27 +55,24 @@ RUN apk --no-cache add --update \
 FROM alpine:3.7
 
 
-# Installing dependencies of Tor and pwgen
+# Installing dependencies of Tor
 RUN apk --no-cache add --update \
       libevent \
       libressl \
       xz-libs \
       zlib \
-      zstd \
-      pwgen
-
-# Copy obfs4proxy & meek-server
-COPY --from=go-build /usr/local/bin/ /usr/local/bin/
+      zstd
 
 # Copy Tor
-COPY --from=tor-build /usr/local/ /usr/local/
+COPY --from=tor-build /usr/local/tor* /usr/local/
 
 # Persist data
 VOLUME /etc/tor /var/lib/tor
 
 COPY docker-entrypoint.sh /entrypoint.sh
-# ORPort, DirPort, SocksPort, ObfsproxyPort, MeekPort
-EXPOSE 9001 9030 9050 54444 7002
+
+# SOCKS5, TOR control
+EXPOSE 9050 9051
 
 ENTRYPOINT ["./entrypoint.sh"]
 CMD ["tor"]
