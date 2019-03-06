@@ -95,7 +95,7 @@ RUN apt-get install -y pkg-config && wget -q https://www.torproject.org/dist/tor
     --enable-static-openssl --with-openssl-dir=$QEMU_LD_PREFIX \
     --enable-static-zlib --with-zlib-dir=$QEMU_LD_PREFIX \
     --enable-zstd --enable-lzma \
-    --disable-systemd --disable-seccomp --disable-unittests \
+    --disable-systemd --disable-seccomp --disable-unittests --disable-tool-name-check \
 && make \
 && make install && cd .. && rm $TAR_NAME && rm -rf $FOLDER_NAME
 
