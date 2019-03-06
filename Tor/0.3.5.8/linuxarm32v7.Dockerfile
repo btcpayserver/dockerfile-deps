@@ -63,11 +63,12 @@ RUN wget -q https://www.torproject.org/dist/tor-0.3.5.8.tar.gz \
 && make install && cd .. && rm tor-0.3.5.8.tar.gz && rm -rf tor-0.3.5.8
 
 FROM arm32v7/debian:stretch-slim
-
+ENV target_host=arm-linux-gnueabihf
+ENV QEMU_LD_PREFIX=/usr/${target_host}
 COPY --from=download /usr/bin/qemu-arm-static /usr/bin/qemu-arm-static
 COPY --from=download "/tmp/bin" /usr/local/bin
 COPY --from=tor-build /usr/arm-linux-gnueabihf/bin/tor* /usr/bin/
-COPY --from=tor-build /usr/arm-linux-gnueabihf/share/tor/ /usr/bin/share/tor/
+COPY --from=tor-build ${QEMU_LD_PREFIX}/share/tor/ ${QEMU_LD_PREFIX}/share/tor/
 
 RUN chmod +x /usr/local/bin/gosu && groupadd -r tor && useradd -r -m -g tor tor
 
