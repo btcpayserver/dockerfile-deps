@@ -72,16 +72,10 @@ RUN apk --no-cache add --update \
 COPY --from=tor-build "/tmp/bin" /usr/local/bin
 COPY --from=tor-build /usr/local/ /usr/local/
 
-RUN chmod +x /usr/local/bin/gosu && addgroup -g 19001 -S tor && adduser -u 19001 -G tor -S tor
+ENV TOR_DATA /home/tor/.tor
+RUN chmod +x /usr/local/bin/gosu && addgroup -g 19001 -S tor && adduser -u 19001 -G tor -S tor && mkdir -p ${TOR_DATA} && chown -R tor:tor "$TOR_DATA"
 
-# create data directory
-ENV TOR_DATA /data
-RUN mkdir "$TOR_DATA" \
-	&& chown -R tor:tor "$TOR_DATA" \
-	&& ln -sfn "$TOR_DATA" /home/tor/.tor \
-	&& chown -h tor:tor /home/tor/.tor
-
-VOLUME /data
+VOLUME /home/tor/.tor
 COPY docker-entrypoint.sh /entrypoint.sh
 
 # SOCKS5, TOR control

@@ -108,16 +108,10 @@ COPY --from=download "/tmp/bin" /usr/local/bin
 COPY --from=tor-build /usr/arm-linux-gnueabihf/bin/tor* /usr/bin/
 COPY --from=tor-build ${QEMU_LD_PREFIX}/share/tor/ ${QEMU_LD_PREFIX}/share/tor/
 
-RUN chmod +x /usr/local/bin/gosu && groupadd -r tor && useradd -r -m -g tor tor
+ENV TOR_DATA /home/tor/.tor
+RUN chmod +x /usr/local/bin/gosu && groupadd -r tor && useradd -r -m -g tor tor && mkdir -p ${TOR_DATA} && chown -R tor:tor "$TOR_DATA"
 
-# create data directory
-ENV TOR_DATA /data
-RUN mkdir "$TOR_DATA" \
-	&& chown -R tor:tor "$TOR_DATA" \
-	&& ln -sfn "$TOR_DATA" /home/tor/.tor \
-	&& chown -h tor:tor /home/tor/.tor
-
-VOLUME /data
+VOLUME /home/tor/.tor
 
 COPY docker-entrypoint.sh /entrypoint.sh
 
