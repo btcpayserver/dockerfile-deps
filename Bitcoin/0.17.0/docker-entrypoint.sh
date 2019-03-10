@@ -29,8 +29,8 @@ if [[ "$1" == "bitcoin-cli" || "$1" == "bitcoin-tx" || "$1" == "bitcoind" || "$1
 		TOR_CONTROL_PORT=$(echo ${BITCOIN_TORCONTROL} | cut -d ':' -f 2)
 		if [[ "$TOR_CONTROL_HOST" ]] && [[ "$TOR_CONTROL_PORT" ]]; then
 			TOR_IP=$(getent hosts $TOR_CONTROL_HOST | cut -d ' ' -f 1)
-			echo "torcontrol=$TOR_CONTROL_HOST:$TOR_CONTROL_PORT" >> "$BITCOIN_DATA/bitcoin.conf"
-			echo "Added "torcontrol=$TOR_CONTROL_HOST:$TOR_CONTROL_PORT" to $BITCOIN_DATA/bitcoin.conf"
+			echo "torcontrol=$TOR_IP:$TOR_CONTROL_PORT" >> "$BITCOIN_DATA/bitcoin.conf"
+			echo "Added "torcontrol=$TOR_IP:$TOR_CONTROL_PORT" to $BITCOIN_DATA/bitcoin.conf"
 		else
 			echo "Invalid BITCOIN_TORCONTROL"
 		fi
