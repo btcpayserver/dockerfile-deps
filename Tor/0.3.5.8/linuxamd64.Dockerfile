@@ -40,7 +40,7 @@ RUN apk --no-cache add --update \
         gpg --verify $TOR_TARBALL_NAME.asc \
       && tar xf $TOR_TARBALL_NAME \
       && cd tor-$TOR_VERSION \
-      && ./configure --disable-unittests \
+      && ./configure --disable-unittests --disable-systemd --disable-seccomp --disable-asciidoc \
       && make install \
       && ls -R /usr/local/ \
       && strip /usr/local/bin/tor-* && strip /usr/local/bin/tor
@@ -81,5 +81,6 @@ COPY docker-entrypoint.sh /entrypoint.sh
 # SOCKS5, TOR control
 EXPOSE 9050 9051
 ENV TOR_CONFIG=/usr/local/etc/tor/torrc
+
 ENTRYPOINT ["./entrypoint.sh"]
 CMD ["tor"]

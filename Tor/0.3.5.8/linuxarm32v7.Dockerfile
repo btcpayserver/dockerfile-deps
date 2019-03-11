@@ -89,7 +89,7 @@ RUN apt-get install -y pkg-config && wget -q https://www.torproject.org/dist/tor
 && echo "d5c56603942a8927670f50a4a469fb909e29d3571fdd013389d567e57abc0b47 $TAR_NAME" | sha256sum -c - \
 && tar xvf $TAR_NAME \
 && cd $FOLDER_NAME \
-&& ./configure --prefix=$QEMU_LD_PREFIX --host=${target_host} --disable-gcc-hardening --disable-system-torrc --disable-asciidoc \
+&& ./configure --prefix=$QEMU_LD_PREFIX --host=${target_host} --disable-gcc-hardening --disable-asciidoc \
     --enable-static-tor \
     --enable-static-libevent --with-libevent-dir=$QEMU_LD_PREFIX \
     --enable-static-openssl --with-openssl-dir=$QEMU_LD_PREFIX \
@@ -117,6 +117,12 @@ COPY docker-entrypoint.sh /entrypoint.sh
 
 # SOCKS5, TOR control
 EXPOSE 9050 9051
-ENV TOR_CONFIG=/home/tor/.torrc
+ENV TOR_CONFIG=/usr/local/etc/tor/torrc
+
+RUN rm -rf /usr/arm-linux-gnueabihf/etc/tor \
+   && mkdir -p /usr/arm-linux-gnueabihf/etc \
+   && mkdir -p /usr/local/etc/tor \
+   && ln -sfn /usr/local/etc/tor /usr/arm-linux-gnueabihf/etc/tor
+
 ENTRYPOINT ["./entrypoint.sh"]
 CMD ["tor"]

@@ -1,6 +1,7 @@
 #!/bin/sh
 set -e
 
+mkdir -p "$(dirname $TOR_CONFIG)"
 mkdir -p "$TOR_DATA"
 
 cat <<-EOF > "$TOR_CONFIG"
@@ -9,7 +10,7 @@ SOCKSPort 0.0.0.0:9050
 ${TOR_EXTRA_ARGS}
 EOF
 
-if [[ "$TOR_PASSWORD" ]]; then
+if ! [ -z "${TOR_PASSWORD}" ]; then
     TOR_PASSWORD_HASH="$(gosu tor tor --hash-password "$TOR_PASSWORD")"
     echo "HashedControlPassword $TOR_PASSWORD_HASH" >> "$TOR_CONFIG"
     echo "'HashedControlPassword $TOR_PASSWORD_HASH' added to tor config"
