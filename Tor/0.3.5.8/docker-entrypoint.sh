@@ -3,11 +3,13 @@ set -e
 
 mkdir -p "$(dirname $TOR_CONFIG)"
 mkdir -p "$TOR_DATA"
+mkdir -p "/etc/torrc.d"
 
 cat <<-EOF > "$TOR_CONFIG"
 ControlPort 0.0.0.0:9051
 SOCKSPort 0.0.0.0:9050
 ${TOR_EXTRA_ARGS}
+%include /etc/torrc.d/
 EOF
 
 if ! [ -z "${TOR_PASSWORD}" ]; then
