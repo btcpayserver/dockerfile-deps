@@ -14,6 +14,7 @@ EOF
 
 chown tor:tor "$TOR_CONFIG"
 chown -R tor "$TOR_DATA"
+chmod 700 /home/tor/.tor
 
 if ! [ -z "${TOR_PASSWORD}" ]; then
     TOR_PASSWORD_HASH="$(gosu tor tor --hash-password "$TOR_PASSWORD")"
