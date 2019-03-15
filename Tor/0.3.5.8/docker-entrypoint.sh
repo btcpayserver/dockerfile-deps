@@ -12,13 +12,13 @@ ${TOR_EXTRA_ARGS}
 %include /etc/torrc.d/
 EOF
 
+chown tor:tor "$TOR_CONFIG"
+chown -R tor "$TOR_DATA"
+
 if ! [ -z "${TOR_PASSWORD}" ]; then
     TOR_PASSWORD_HASH="$(gosu tor tor --hash-password "$TOR_PASSWORD")"
     echo "HashedControlPassword $TOR_PASSWORD_HASH" >> "$TOR_CONFIG"
     echo "'HashedControlPassword $TOR_PASSWORD_HASH' added to tor config"
 fi
-
-chown tor:tor "$TOR_CONFIG"
-chown -R tor "$TOR_DATA"
 
 exec gosu tor "$@"
