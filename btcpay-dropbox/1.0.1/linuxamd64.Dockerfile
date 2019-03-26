@@ -6,4 +6,6 @@ COPY . /btcpay-dropbox
 
 RUN pip install dropbox
 
+ENV DROPBOX_TOKEN
+
 ENTRYPOINT ["python3", "dropbox-script.py"]
