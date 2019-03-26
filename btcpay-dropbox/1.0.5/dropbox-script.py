@@ -4,6 +4,7 @@ import sys
 import os
 import dropbox
 from dropbox.exceptions import ApiError, AuthError
+from dropbox.files import WriteMode
 
 # You can generate one for yourself in the App Console.
 TOKEN = os.environ.get('DROPBOX_TOKEN')
@@ -28,14 +29,16 @@ except AuthError:
 with open(LOCALFILE, 'rb') as f:
     print("Uploading " + LOCALFILE + " to Dropbox ...")
     if file_size <= CHUNK_SIZE:
-        print(dbx.files_upload(f.read(), f'/{sys.argv[1]}'))
+        print(dbx.files_upload(
+            f.read(), f'/{sys.argv[1]}', mode=WriteMode('overwrite')))
     try:
         upload_session_start_result = \
                 dbx.files_upload_session_start(f.read(CHUNK_SIZE))
         cursor = dropbox.files.UploadSessionCursor(
                 session_id=upload_session_start_result.session_id,
                 offset=f.tell())
-        commit = dropbox.files.CommitInfo(path=f'/{sys.argv[1]}')
+        commit = dropbox.files.CommitInfo(
+                path=f'/{sys.argv[1]}', mode=WriteMode('overwrite'))
 
         while f.tell() < file_size:
             if ((file_size - f.tell()) <= CHUNK_SIZE):
