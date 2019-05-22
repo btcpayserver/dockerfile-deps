@@ -15,7 +15,7 @@ if [[ "$1" == "litecoin-cli" || "$1" == "litecoin-tx" || "$1" == "litecoind" || 
 		CONFIG_PREFIX=$'mainnet=1\n[main]'
 	fi
 
-	cat <<-EOF > "$BITCOIN_DATA/bitcoin.conf"
+	cat <<-EOF > "$BITCOIN_DATA/litecoin.conf"
 	${CONFIG_PREFIX}
 	printtoconsole=1
 	rpcallowip=::/0
