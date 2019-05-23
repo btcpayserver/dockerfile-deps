@@ -22,6 +22,7 @@ jobs:
           command: |
             source ".circleci/parse-tag.sh"
             DOCKERHUB_DOCKEFILE="$DOCKERHUB_DOCKEFILE_AMD64"
+            DOCKERHUB_DESTINATION="$DOCKERHUB_REPO:$LATEST_TAG-amd64"
             source ".circleci/push-image.sh"
 
   publish_linuxarm64v8:
@@ -33,6 +34,7 @@ jobs:
           command: |
             source ".circleci/parse-tag.sh"
             DOCKERHUB_DOCKEFILE="$DOCKERHUB_DOCKEFILE_ARM64"
+            DOCKERHUB_DESTINATION="$DOCKERHUB_REPO:$LATEST_TAG-arm64v8"
             if [ -f $DOCKERHUB_DOCKEFILE ]; then
             #
             # Make sure the builder is copy the arm emulator
@@ -55,6 +57,7 @@ jobs:
           command: |
             source ".circleci/parse-tag.sh"
             DOCKERHUB_DOCKEFILE="$DOCKERHUB_DOCKEFILE_ARM32"
+            DOCKERHUB_DESTINATION="$DOCKERHUB_REPO:$LATEST_TAG-arm32v7"
             #
             # Make sure the builder is copy the arm emulator
             sudo docker run --rm --privileged multiarch/qemu-user-static:register --reset
