@@ -7,12 +7,20 @@ if [[ "$1" == "bitcoin-cli" || "$1" == "bitcoin-tx" || "$1" == "bitcoind" || "$1
 	CONFIG_PREFIX=""
 	if [[ "${BITCOIN_NETWORK}" == "regtest" ]]; then
 		CONFIG_PREFIX=$'regtest=1\n[regtest]'
-	fi
-	if [[ "${BITCOIN_NETWORK}" == "testnet" ]]; then
+	elif [[ "${BITCOIN_NETWORK}" == "testnet" ]]; then
 		CONFIG_PREFIX=$'testnet=1\n[test]'
-	fi
-	if [[ "${BITCOIN_NETWORK}" == "mainnet" ]]; then
+	elif [[ "${BITCOIN_NETWORK}" == "mainnet" ]]; then
 		CONFIG_PREFIX=$'mainnet=1\n[main]'
+	else 
+		BITCOIN_NETWORK=""
+	fi
+
+	if [[ "$BITCOIN_WALLETDIR" ]] && [[ "$BITCOIN_NETWORK" ]]; then
+		NL=$'\n'
+		WALLETDIR="$BITCOIN_WALLETDIR/${BITCOIN_NETWORK}"
+		mkdir -p "$WALLETDIR"	
+		chown -R bitcoin:bitcoin "$WALLETDIR"
+		CONFIG_PREFIX="${CONFIG_PREFIX}${NL}walletdir=${WALLETDIR}${NL}"
 	fi
 
 	cat <<-EOF > "$BITCOIN_DATA/bitcoin.conf"
