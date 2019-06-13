@@ -6,9 +6,9 @@ RUN set -ex \
 	&& apt-get install -qq --no-install-recommends ca-certificates dirmngr gosu gpg wget
 
 ENV DASH_VERSION 0.14.0
-ENV DASH_URL https://github.com/dashpay/dash/releases/download/v0.14.0.1/dashcore-0.14.0.1-arm-linux-gnueabihf.tar.gz
-ENV DASH_SHA256 ae9a6808ab9ca491f771cda7569efecaeb6cc5aa42bcbcd58289ba622b54dbf7
-ENV DASH_ASC_URL https://github.com/dashpay/dash/releases/download/v0.14.0.1/SHA256SUMS.asc
+ENV DASH_URL https://github.com/dashpay/dash/releases/download/v0.14.0.0/dashcore-0.14.0.0-arm-linux-gnueabihf.tar.gz
+ENV DASH_SHA256 30f41043bb67fd2b871d2b5e401fbbaab2305ef6be9bdf82edec1bd7e5a611f1
+ENV DASH_ASC_URL https://github.com/dashpay/dash/releases/download/v0.14.0.0/SHA256SUMS.asc
 ENV DASH_PGP_KEY 63a96b406102e091
 
 # install dash binaries
