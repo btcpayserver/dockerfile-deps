@@ -6,6 +6,7 @@ if [[ "$1" == "elements-cli" || "$1" == "elements-tx" || "$1" == "elementsd" || 
 
 	CONFIG_PREFIX=""
 	CHAIN="$ELEMENTS_CHAIN"
+	NL=$'\n'
 	if [[ "$CHAIN" ]]; then
 		CONFIG_PREFIX="chain=$CHAIN\n[$CHAIN]"
 	elif [[ "${ELEMENTS_NETWORK}" == "regtest" ]]; then
@@ -19,11 +20,11 @@ if [[ "$1" == "elements-cli" || "$1" == "elements-tx" || "$1" == "elementsd" || 
 	fi
 	
 	if [[ "$CHAIN" ]]; then
-		CONFIG_PREFIX="chain=$CHAIN\n[$CHAIN]"
+		CONFIG_PREFIX="chain=${CHAIN}${NL}[${CHAIN}]"
 	fi
 	
 	if [[ "$ELEMENTS_WALLETDIR" ]] && [[ "$CHAIN" ]]; then
-		NL=$'\n'
+		
 		WALLETDIR="$ELEMENTS_WALLETDIR/${CHAIN}"
 		mkdir -p "$WALLETDIR"	
 		chown -R elements:elements "$WALLETDIR"
