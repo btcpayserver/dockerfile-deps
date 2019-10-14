@@ -8,14 +8,14 @@ version: 2
 jobs:
   build:
     machine: 
-      docker_layer_caching: true
+      enabled: true
     steps: 
       - checkout
 
   # publish jobs require $DOCKERHUB_USER, $DOCKERHUB_PASS defined
   publish_linuxamd64:
     machine:
-      docker_layer_caching: true
+      enabled: true
     steps:
       - checkout  
       - run:
@@ -27,7 +27,7 @@ jobs:
 
   publish_linuxarm64v8:
     machine:
-      docker_layer_caching: true
+      enabled: true
     steps:
       - checkout  
       - run:
@@ -50,7 +50,7 @@ jobs:
             fi
   publish_linuxarm32v7:
     machine:
-      docker_layer_caching: true
+      enabled: true
     steps:
       - checkout
       - run:
