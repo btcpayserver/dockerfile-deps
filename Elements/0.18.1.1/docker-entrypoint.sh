@@ -14,7 +14,7 @@ if [[ "$1" == "elements-cli" || "$1" == "elements-tx" || "$1" == "elementsd" || 
 	elif [[ "${ELEMENTS_NETWORK}" == "testnet" ]]; then
 		CHAIN="${ELEMENTS_TESTNET_CHAIN:-testnet}"
 	elif [[ "${ELEMENTS_NETWORK}" == "mainnet" ]]; then
-		CHAIN="${ELEMENTS_REGTEST_CHAIN:-regtest}"
+		CHAIN="${ELEMENTS_MAINNET_CHAIN:-liquidv1}"
 	else 
 		CHAIN=""
 	fi
