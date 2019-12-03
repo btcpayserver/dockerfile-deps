@@ -34,7 +34,7 @@ RUN mkdir "$ELEMENTS_DATA" \
 VOLUME /data
 
 COPY docker-entrypoint.sh /entrypoint.sh
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["bash", "/entrypoint.sh"]
 
 EXPOSE 8332 8333 18332 18333 18443 18444
 CMD ["elementsd"]
