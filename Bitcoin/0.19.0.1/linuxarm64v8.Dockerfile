@@ -1,9 +1,10 @@
 # Use manifest image which support all architecture
-FROM debian:stretch-slim as builder
+FROM debian:buster-slim as builder
 
 RUN set -ex \
 	&& apt-get update \
 	&& apt-get install -qq --no-install-recommends ca-certificates dirmngr gosu wget
+RUN apt-get install -qq --no-install-recommends qemu-user-static binfmt-support
 
 ENV BITCOIN_VERSION 0.19.0.1
 ENV BITCOIN_URL https://bitcoincore.org/bin/bitcoin-core-0.19.0.1/bitcoin-0.19.0.1-aarch64-linux-gnu.tar.gz
@@ -21,10 +22,10 @@ RUN set -ex \
 	&& echo "5e279972a1c7adee65e3b5661788e8706594b458b7ce318fecbd392492cc4dbd gosu" | sha256sum -c -
 
 # Making sure the builder build an arm image despite being x64
-FROM arm64v8/debian:stretch-slim
+FROM arm64v8/debian:buster-slim
 
 COPY --from=builder "/tmp/bin" /usr/local/bin
-#EnableQEMU COPY qemu-aarch64-static /usr/bin
+COPY --from=builder /usr/bin/qemu-aarch64-static /usr/bin/qemu-aarch64-static
 
 RUN chmod +x /usr/local/bin/gosu && groupadd -r bitcoin && useradd -r -m -g bitcoin bitcoin
 
