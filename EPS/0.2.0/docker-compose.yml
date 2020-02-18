@@ -1,0 +1,33 @@
+version: "3"
+
+services:
+  electrum_ps:
+    image: btcpayserver/eps:0.2.0
+    restart: unless-stopped
+    ports:
+      - "50002:50002"
+    environment:
+        EPS_CONFIG: |
+            [master-public-keys]
+            wallet = DOCKERXPUB
+            [bitcoin-rpc]
+            host = DOCKERHOST
+            port = DOCKERPORT
+            rpc_user = DOCKERRPC_USER
+            rpc_password = DOCKERRPC_PASSWORD
+            poll_interval_listening = 600
+            poll_interval_connected = 5
+            initial_import_count = 1000
+            gap_limit = 25
+            wallet_filename =
+            [electrum-server]
+            host = 0.0.0.0
+            port = 50002
+            broadcast_method = own-node
+            ip_whitelist = *
+            disable_mempool_fee_histogram = false
+            # certfile = certs/cert.crt
+            # keyfile = certs/cert.key
+            # If you use your own certificates put them in the docker volume, comment out the above and use something like:
+            #certfile = /srv/yourcert.crt
+            #keyfile = /srv/yourkey.key
