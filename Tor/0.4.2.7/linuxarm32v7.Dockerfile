@@ -84,13 +84,14 @@ RUN wget -q https://github.com/facebook/zstd/archive/v1.3.2.tar.gz \
 && make \
 && make install && cd .. && rm $TAR_NAME && rm -rf $FOLDER_NAME
 
+# https://trac.torproject.org/projects/tor/ticket/27802
 RUN apt-get install -y pkg-config && wget -q https://www.torproject.org/dist/tor-${TOR_VERSION}.tar.gz \
 && TAR_NAME=tor-${TOR_VERSION}.tar.gz \
 && FOLDER_NAME=tor-${TOR_VERSION} \
 && echo "${TOR_HASH} $TAR_NAME" | sha256sum -c - \
 && tar xvf $TAR_NAME \
 && cd $FOLDER_NAME \
-&& ./configure --prefix=$QEMU_LD_PREFIX --host=${target_host} --disable-gcc-hardening --disable-asciidoc \
+&& LIBS="-lssl -lcrypto -lpthread -ldl" ./configure --prefix=$QEMU_LD_PREFIX --host=${target_host} --disable-gcc-hardening --disable-asciidoc \
     --enable-static-tor \
     --enable-static-libevent --with-libevent-dir=$QEMU_LD_PREFIX \
     --enable-static-openssl --with-openssl-dir=$QEMU_LD_PREFIX \
