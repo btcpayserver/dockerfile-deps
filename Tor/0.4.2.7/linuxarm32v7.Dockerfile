@@ -39,10 +39,10 @@ RUN wget -q https://zlib.net/zlib-1.2.11.tar.gz \
 && make \
 && make install && cd .. && rm $TAR_NAME && rm -rf $FOLDER_NAME
 
-RUN wget -q https://github.com/openssl/openssl/archive/OpenSSL_1_1_1f.tar.gz \
-&& TAR_NAME=OpenSSL_1_1_1f.tar.gz \
-&& FOLDER_NAME=openssl-OpenSSL_1_1_1f \
-&& echo "76b78352bc8a9aaccc1de2eb4a52fa9c7f6a5980985242ce3514b0cd208642d3 $TAR_NAME" | sha256sum -c - \
+RUN wget -q https://github.com/openssl/openssl/archive/OpenSSL_1_0_2s.tar.gz \
+&& TAR_NAME=OpenSSL_1_0_2s.tar.gz \
+&& FOLDER_NAME=openssl-OpenSSL_1_0_2s \
+&& echo "f84db9e154d1a8f3013be98b574dc8fca23089fffffae2abaf8683e0b9a41c42 $TAR_NAME" | sha256sum -c - \
 && tar xvf $TAR_NAME \
 && cd $FOLDER_NAME \
 && ./Configure --prefix=$QEMU_LD_PREFIX linux-armv4 -march=armv7 no-shared no-dso no-zlib no-asm \
