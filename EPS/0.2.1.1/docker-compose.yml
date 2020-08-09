@@ -2,7 +2,7 @@ version: "3"
 
 services:
   electrum_ps:
-    image: btcpayserver/eps:0.2.0
+    image: btcpayserver/eps:0.2.1.1
     restart: unless-stopped
     ports:
       - "50002:50002"

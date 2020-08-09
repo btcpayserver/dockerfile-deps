@@ -5,7 +5,7 @@ FROM arm32v7/python:3.8.1-slim-buster
 
 COPY --from=builder /usr/bin/qemu-arm-static /usr/bin/qemu-arm-static
 
-ENV EPS_VERSION 0.2.0
+ENV EPS_VERSION 0.2.1.1
 ENV EPS_SHA256 e0931428a5a01801528cd8d05a0fdc5ef708b33d491ebb6721edb9237d30c285
 
 RUN apt-get update && \
