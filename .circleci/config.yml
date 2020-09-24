@@ -23,7 +23,11 @@ jobs:
             source ".circleci/parse-tag.sh"
             DOCKERHUB_DOCKEFILE="$DOCKERHUB_DOCKEFILE_AMD64"
             DOCKERHUB_DESTINATION="$DOCKERHUB_REPO:$LATEST_TAG-amd64"
-            source ".circleci/push-image.sh"
+            if [ -f $DOCKERHUB_DOCKEFILE ]; then
+                source ".circleci/push-image.sh"
+            else
+                echo "Skipping linuxamd64 because $DOCKERHUB_DOCKEFILE is not found"
+            fi
 
   publish_linuxarm64v8:
     machine:
@@ -36,17 +40,17 @@ jobs:
             DOCKERHUB_DOCKEFILE="$DOCKERHUB_DOCKEFILE_ARM64"
             DOCKERHUB_DESTINATION="$DOCKERHUB_REPO:$LATEST_TAG-arm64v8"
             if [ -f $DOCKERHUB_DOCKEFILE ]; then
-            #
-            # Make sure the builder is copy the arm emulator
-            sudo docker run --rm --privileged multiarch/qemu-user-static:register --reset
-            sudo apt update
-            sudo apt install -y qemu qemu-user-static qemu-user binfmt-support
-            sudo cp /usr/bin/qemu-aarch64-static "$(dirname "$DOCKERHUB_DOCKEFILE")/qemu-aarch64-static"
-            sed -i -e 's/#EnableQEMU //g' "$DOCKERHUB_DOCKEFILE"
-            #
-            source ".circleci/push-image.sh"
+                #
+                # Make sure the builder is copy the arm emulator
+                sudo docker run --rm --privileged multiarch/qemu-user-static:register --reset
+                sudo apt update
+                sudo apt install -y qemu qemu-user-static qemu-user binfmt-support
+                sudo cp /usr/bin/qemu-aarch64-static "$(dirname "$DOCKERHUB_DOCKEFILE")/qemu-aarch64-static"
+                sed -i -e 's/#EnableQEMU //g' "$DOCKERHUB_DOCKEFILE"
+                #
+                source ".circleci/push-image.sh"
             else
-            echo "Skipping linuxarm64v8 because $DOCKERHUB_DOCKEFILE is not found"
+                echo "Skipping linuxarm64v8 because $DOCKERHUB_DOCKEFILE is not found"
             fi
   publish_linuxarm32v7:
     machine:
@@ -58,17 +62,21 @@ jobs:
             source ".circleci/parse-tag.sh"
             DOCKERHUB_DOCKEFILE="$DOCKERHUB_DOCKEFILE_ARM32"
             DOCKERHUB_DESTINATION="$DOCKERHUB_REPO:$LATEST_TAG-arm32v7"
-            #
-            # Make sure the builder is copy the arm emulator
-            sudo docker run --rm --privileged multiarch/qemu-user-static:register --reset
-            if grep "#EnableQEMU" $DOCKERHUB_DOCKEFILE; then
-            sudo apt update
-            sudo apt install -y qemu qemu-user-static qemu-user binfmt-support
-            sudo cp /usr/bin/qemu-arm-static "$(dirname "$DOCKERHUB_DOCKEFILE")/qemu-arm-static"
-            sed -i -e 's/#EnableQEMU //g' "$DOCKERHUB_DOCKEFILE"
+            if [ -f $DOCKERHUB_DOCKEFILE ]; then
+                #
+                # Make sure the builder is copy the arm emulator
+                sudo docker run --rm --privileged multiarch/qemu-user-static:register --reset
+                if grep "#EnableQEMU" $DOCKERHUB_DOCKEFILE; then
+                    sudo apt update
+                    sudo apt install -y qemu qemu-user-static qemu-user binfmt-support
+                    sudo cp /usr/bin/qemu-arm-static "$(dirname "$DOCKERHUB_DOCKEFILE")/qemu-arm-static"
+                    sed -i -e 's/#EnableQEMU //g' "$DOCKERHUB_DOCKEFILE"
+                fi
+                #
+                source ".circleci/push-image.sh"
+            else
+                echo "Skipping linuxarm32v7 because $DOCKERHUB_DOCKEFILE is not found"
             fi
-            #
-            source ".circleci/push-image.sh"
   publish_multiarch:
     machine:
       enabled: true
@@ -83,17 +91,31 @@ jobs:
             source ".circleci/parse-tag.sh"
             #
             sudo docker login --username=$DOCKERHUB_USER --password=$DOCKERHUB_PASS
-            IMAGES="$DOCKERHUB_DESTINATION-amd64 $DOCKERHUB_DESTINATION-arm32v7"
-            if [ -f $DOCKERHUB_DOCKEFILE_ARM64 ]; then
-            IMAGES="$IMAGES $DOCKERHUB_DESTINATION-arm64v8"
+            IMAGES=""
+            if [ -f $DOCKERHUB_DOCKEFILE_AMD64 ]; then
+                IMAGES="$IMAGES $DOCKERHUB_DESTINATION-amd64"
             fi
-            sudo docker manifest create --amend $DOCKERHUB_DESTINATION $IMAGES 
-            sudo docker manifest annotate $DOCKERHUB_DESTINATION $DOCKERHUB_DESTINATION-amd64 --os linux --arch amd64
-            sudo docker manifest annotate $DOCKERHUB_DESTINATION $DOCKERHUB_DESTINATION-arm32v7 --os linux --arch arm --variant v7
             if [ -f $DOCKERHUB_DOCKEFILE_ARM64 ]; then
-            sudo docker manifest annotate $DOCKERHUB_DESTINATION $DOCKERHUB_DESTINATION-arm64v8 --os linux --arch arm64 --variant v8
+                IMAGES="$IMAGES $DOCKERHUB_DESTINATION-arm64v8"
             fi
-            sudo docker manifest push $DOCKERHUB_DESTINATION -p
+            if [ -f $DOCKERHUB_DOCKEFILE_ARM32 ]; then
+                IMAGES="$IMAGES $DOCKERHUB_DESTINATION-arm32v7"
+            fi
+            if [ -z "$IMAGES" ];
+                echo "Skipping $DOCKERHUB_DESTINATION as there were no supported platforms to build for"
+            else
+                sudo docker manifest create --amend $DOCKERHUB_DESTINATION $IMAGES 
+                if [ -f $DOCKERHUB_DOCKEFILE_AMD64 ]; then
+                    sudo docker manifest annotate $DOCKERHUB_DESTINATION $DOCKERHUB_DESTINATION-amd64 --os linux --arch amd64         
+                fi
+                if [ -f $DOCKERHUB_DOCKEFILE_ARM32 ]; then
+                    sudo docker manifest annotate $DOCKERHUB_DESTINATION $DOCKERHUB_DESTINATION-arm32v7 --os linux --arch arm --variant v7
+                fi
+                if [ -f $DOCKERHUB_DOCKEFILE_ARM64 ]; then
+                    sudo docker manifest annotate $DOCKERHUB_DESTINATION $DOCKERHUB_DESTINATION-arm64v8 --os linux --arch arm64 --variant v8
+                fi
+                sudo docker manifest push $DOCKERHUB_DESTINATION -p
+            fi
 
 workflows:
   version: 2
