@@ -101,7 +101,7 @@ jobs:
             if [ -f $DOCKERHUB_DOCKEFILE_ARM32 ]; then
                 IMAGES="$IMAGES $DOCKERHUB_DESTINATION-arm32v7"
             fi
-            if [ -z "$IMAGES" ];
+            if [ -z "$IMAGES" ]; then
                 echo "Skipping $DOCKERHUB_DESTINATION as there were no supported platforms to build for"
             else
                 sudo docker manifest create --amend $DOCKERHUB_DESTINATION $IMAGES 
