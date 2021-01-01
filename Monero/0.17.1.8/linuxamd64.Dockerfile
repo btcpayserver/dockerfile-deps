@@ -1,7 +1,7 @@
 # runtime stage
 FROM debian:stretch-slim
 ENV FILE=monero-linux-x64-v0.17.1.8.tar.bz2
-ENV FILE_CHECKSUM=98ce0d22db0d1112114bbad4c9773d1490d30e5c643423c2e5bffc19553207f9
+ENV FILE_CHECKSUM=b566652c5281970c6137c27dd15002fe6d4c9230bc37d81545b2f36c16e7d476
 RUN apt-get update \
     && apt-get -y --no-install-recommends install bzip2 ca-certificates wget curl
 RUN wget -qO $FILE https://downloads.getmonero.org/cli/$FILE 
