@@ -1,3 +1,4 @@
+# Base image uses PHP which supports linux/arm64/v8
 FROM prestashop/prestashop:1.7
 
 ENV BTCPAY_PLUGIN_VERSION 0.1.0
