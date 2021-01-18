@@ -16,4 +16,7 @@ RUN apt-get update \
 # Add the BTCPay module to the preinstalled list after default 'Welcome' module
 RUN sed -i "/'welcome',/a 'btcpay'," "$PS_ROOT/$PS_INSTALL_FILE"
 
+# Ensure www-data can write to $PS_ROOT
+RUN chown -R www-data:www-data $PS_ROOT
+
 VOLUME ["/var/www/html"]
