@@ -1,6 +1,5 @@
 # btcpayserver/prestashop
 
-[![Docker Cloud Build Status](https://img.shields.io/docker/cloud/build/btcpayserver/prestashop?style=flat-square)](https://hub.docker.com/repository/docker/btcpayserver/prestashop)
 [![Docker Pulls](https://img.shields.io/docker/pulls/btcpayserver/prestashop?style=flat-square)](https://hub.docker.com/repository/docker/btcpayserver/prestashop)
 [![Docker Image Version (latest semver)](https://img.shields.io/docker/v/btcpayserver/prestashop?sort=semver&style=flat-square)](https://hub.docker.com/repository/docker/btcpayserver/prestashop)
 
