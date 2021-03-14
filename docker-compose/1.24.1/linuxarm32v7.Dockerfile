@@ -8,7 +8,6 @@ ENV LANG C.UTF-8
 
 COPY --from=qemu /usr/bin/qemu-arm-static /usr/bin/qemu-arm-static
 RUN apt-get update && apt-get install -qq --no-install-recommends unzip
-RUN apt-get install -qq --no-install-recommends qemu-user-static binfmt-support
 
 # Set the versions
 ENV DOCKER_COMPOSE_VER 1.24.1
