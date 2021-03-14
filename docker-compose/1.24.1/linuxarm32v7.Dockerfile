@@ -1,5 +1,5 @@
 FROM python:3.6.5-stretch as qemu
-RUN apt-get install -qq --no-install-recommends qemu-user-static binfmt-support
+RUN apt-get update && apt-get install -qq --no-install-recommends qemu-user-static binfmt-support
 
 # Dockerfile to build docker-compose for aarch64
 FROM arm32v7/python:3.6.5-stretch as builder
