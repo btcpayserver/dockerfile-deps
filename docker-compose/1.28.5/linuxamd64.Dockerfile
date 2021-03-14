@@ -21,8 +21,8 @@ RUN pip install six==$SIX_VER
 # https://pyinstaller.readthedocs.io/en/stable/bootloader-building.html
 WORKDIR /build/pyinstallerbootloader
 RUN curl -fsSL https://github.com/pyinstaller/pyinstaller/releases/download/v$PYINSTALLER_VER/PyInstaller-$PYINSTALLER_VER.tar.gz | tar xvz >/dev/null \
-    && cd PyInstaller*/bootloader \
-    && python3 ./waf all
+    && cd pyinstaller-$PYINSTALLER_VER/bootloader \
+    && python3.7 waf configure all && cd .. && python3.7 -m pip install .
 
 # Clone docker-compose
 WORKDIR /build/dockercompose
