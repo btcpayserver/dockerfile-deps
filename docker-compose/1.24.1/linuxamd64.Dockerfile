@@ -6,7 +6,7 @@ ENV LANG C.UTF-8
 RUN apt-get update && apt-get install -qq --no-install-recommends unzip
 
 # Set the versions
-ARG DOCKER_COMPOSE_VER
+ENV DOCKER_COMPOSE_VER 1.24.1
 # docker-compose requires pyinstaller 3.5 (check github.com/docker/compose/requirements-build.txt)
 # If this changes, you may need to modify the version of "six" below
 ENV PYINSTALLER_VER 3.5

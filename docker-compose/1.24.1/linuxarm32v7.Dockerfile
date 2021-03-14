@@ -6,6 +6,7 @@ FROM arm32v7/python:3.6.5-stretch as builder
 # Add env
 ENV LANG C.UTF-8
 
+COPY --from=builder /usr/bin/qemu-arm-static /usr/bin/qemu-arm-static
 RUN apt-get update && apt-get install -qq --no-install-recommends unzip
 RUN apt-get install -qq --no-install-recommends qemu-user-static binfmt-support
 
