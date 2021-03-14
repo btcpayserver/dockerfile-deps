@@ -6,7 +6,7 @@ FROM arm64v8/python:3.6.5-stretch as builder
 # Add env
 ENV LANG C.UTF-8
 
-COPY --from=builder /usr/bin/qemu-arm-static /usr/bin/qemu-arm-static
+COPY --from=qemu /usr/bin/qemu-aarch64-static /usr/bin/qemu-aarch64-static
 RUN apt-get update && apt-get install -qq --no-install-recommends unzip
 
 # Set the versions
