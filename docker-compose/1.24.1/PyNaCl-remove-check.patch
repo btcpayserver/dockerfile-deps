@@ -1,0 +1,14 @@
+diff --git a/setup.py b/setup.py
+index 747dc62..bad491d 100644
+--- a/setup.py
++++ b/setup.py
+@@ -175,9 +175,6 @@ class build_clib(_build_clib):
+         # Build the library
+         subprocess.check_call(["make"] + make_args, cwd=build_temp)
+ 
+-        # Check the build library
+-        subprocess.check_call(["make", "check"] + make_args, cwd=build_temp)
+-
+         # Install the built library
+         subprocess.check_call(["make", "install"] + make_args, cwd=build_temp)
+ 
