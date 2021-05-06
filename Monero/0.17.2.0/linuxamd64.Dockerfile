@@ -15,18 +15,16 @@ RUN apt-get update \
     && apt-get clean autoclean \
     && rm -rf /var/lib/apt/lists/*
 
-# Download specified Monero tar.gz
-RUN wget -qO $FILE https://downloads.getmonero.org/cli/$FILE 
-
-# Verify downloaded binary against hardcoded checksum
-RUN echo "$FILE_CHECKSUM $FILE" | sha256sum -c - 
+# Download specified Monero tar.gz and verify downloaded binary against hardcoded checksum
+RUN wget -qO $FILE https://downloads.getmonero.org/cli/$FILE && \
+    echo "$FILE_CHECKSUM $FILE" | sha256sum -c - 
 
 # Extract and set permissions on Monero binaries
-RUN mkdir -p extracted 
-RUN tar -jxvf $FILE -C /extracted 
-RUN find /extracted/ -type f -print0 | xargs -0 chmod a+x
-RUN find /extracted/ -type f -print0 | xargs -0 mv -t /usr/local/bin/
-RUN rm -rf extracted && rm $FILE 
+RUN mkdir -p extracted && \
+    tar -jxvf $FILE -C /extracted && \
+    find /extracted/ -type f -print0 | xargs -0 chmod a+x && \
+    find /extracted/ -type f -print0 | xargs -0 mv -t /usr/local/bin/ && \
+    rm -rf extracted && rm $FILE
 
 # Copy notifier script
 COPY ./scripts /scripts/
