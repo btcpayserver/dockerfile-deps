@@ -125,23 +125,23 @@ workflows:
           filters:
             branches:
               ignore: /.*/
-            # Example: BitcoinCore/0.17.0 or BitcoinCore/0.17.0-1
+            # Example: BitcoinCore/0.17.0 or BitcoinCore/0.17.0-1 or Bitcoin/0.21.0-based-taproot0.1
             tags:
-              only: /^[^/]+[/][0-9]+(\.[0-9]+)*(-[0-9]+)?/
+              only: /^[^/]+[/][0-9]+(\.[0-9]+)*(-[a-z0-9\.-]+)?/
       - publish_linuxarm32v7:
           filters:
             branches:
               ignore: /.*/
             tags:
               # Example: BitcoinCore/0.17.0
-              only: /^[^/]+[/][0-9]+(\.[0-9]+)*(-[0-9]+)?/
+              only: /^[^/]+[/][0-9]+(\.[0-9]+)*(-[a-z0-9\.-]+)?/
       - publish_linuxarm64v8:
           filters:
             branches:
               ignore: /.*/
             tags:
               # Example: BitcoinCore/0.17.0
-              only: /^[^/]+[/][0-9]+(\.[0-9]+)*(-[0-9]+)?/
+              only: /^[^/]+[/][0-9]+(\.[0-9]+)*(-[a-z0-9\.-]+)?/
       - publish_multiarch:
           requires:
             - publish_linuxamd64
@@ -152,4 +152,4 @@ workflows:
               ignore: /.*/
             tags:
               # Example: BitcoinCore/0.17.0
-              only: /^[^/]+[/][0-9]+(\.[0-9]+)*(-[0-9]+)?/
+              only: /^[^/]+[/][0-9]+(\.[0-9]+)*(-[a-z0-9\.-]+)?/
