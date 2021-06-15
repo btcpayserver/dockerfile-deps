@@ -67,7 +67,8 @@ RUN apk --no-cache add --update \
       libressl \
       xz-libs \
       zlib \
-      zstd
+      zstd \
+      zstd-dev
 
 # Copy Tor
 COPY --from=tor-build "/tmp/bin" /usr/local/bin
