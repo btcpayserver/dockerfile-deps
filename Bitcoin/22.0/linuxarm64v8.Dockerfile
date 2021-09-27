@@ -6,7 +6,7 @@ RUN set -ex \
 	&& apt-get install -qq --no-install-recommends ca-certificates dirmngr gosu wget
 RUN apt-get install -qq --no-install-recommends qemu-user-static binfmt-support
 
-ENV BITCOIN_VERSION 22.0g
+ENV BITCOIN_VERSION 22.0
 ENV BITCOIN_URL https://bitcoincore.org/bin/bitcoin-core-${BITCOIN_VERSION}/bitcoin-${BITCOIN_VERSION}-aarch64-linux-gnu.tar.gz
 ENV BITCOIN_SHA256 ac718fed08570a81b3587587872ad85a25173afa5f9fbbd0c03ba4d1714cfa3e
 
