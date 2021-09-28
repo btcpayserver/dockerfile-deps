@@ -34,8 +34,19 @@ export $(cat "$ENV_FILE" | xargs)
 : "${JM_YIELD_GENERATOR:=yield-generator-basic.py}"
 
 echo "Using wallet ${WALLET_NAME} with $JM_YIELD_GENERATOR"
+LOCKFILE="/root/.joinmarket/wallets/.${WALLET_NAME}.lock"
 rm -f /root/.joinmarket/wallets/.${WALLET_NAME}.lock
 while true; do
-    echo -n "${WALLET_PASS}" | python "${JM_YIELD_GENERATOR}" --wallet-password-stdin "${WALLET_NAME}"
+    if [ -f "/tmp/stop" ]; then
+        echo "/tmp/stop is present, waiting it to get removed to start again..."
+        touch /tmp/stopped
+    elif [ -f "$LOCKFILE" ]; then
+        echo "$LOCKFILE is present, waiting it to get removed to start again..."
+        touch /tmp/stopped
+    else
+        rm -f /tmp/stopped
+        echo -n "${WALLET_PASS}" | python "${JM_YIELD_GENERATOR}" --wallet-password-stdin "${WALLET_NAME}" || true
+        touch /tmp/stopped
+    fi
     sleep 10
 done

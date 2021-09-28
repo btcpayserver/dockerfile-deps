@@ -1,9 +1,4 @@
 #!/bin/bash
-set -e
-
-cd ..
-. jmvenv/bin/activate
-cd scripts
 
 if ! [ -f "${ENV_FILE}" ]; then
     echo "You need to initialize the wallet.
@@ -11,5 +6,8 @@ if ! [ -f "${ENV_FILE}" ]; then
     jm.sh set-wallet <wallet_name> <Password>"
     exit 1
 fi
+
+stop.sh
 export $(cat "$ENV_FILE" | xargs)
-echo -n "${WALLET_PASS}" | python wallet-tool.py --wallet-password-stdin "${WALLET_NAME}" "$@"
+echo -n "${WALLET_PASS}" | python receive-payjoin.py --wallet-password-stdin "${WALLET_NAME}" "$@"
+start.sh

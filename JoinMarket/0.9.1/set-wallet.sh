@@ -4,7 +4,7 @@ set -e
 WALLET_NAME="$1"
 WALLET_PASS="$2"
 if ! [[ "$WALLET_NAME" ]] || ! [[ "$WALLET_PASS" ]]; then
-    echo "Usage: set-wallet.py <wallet_name> <password>"
+    echo "Usage: set-wallet <wallet_name> <password>"
     exit 1
 fi
 echo "WALLET_NAME=$WALLET_NAME" > "$ENV_FILE"
