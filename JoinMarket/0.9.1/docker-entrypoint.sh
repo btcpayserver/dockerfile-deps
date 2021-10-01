@@ -23,12 +23,4 @@ if [[ "${READY_FILE}" ]]; then
     echo "The chain is fully synched"
 fi
 
-if ! [ -f "${ENV_FILE}" ]; then
-    echo "You need to initialize the wallet.
-    jm.sh wallet-tool-generate
-    jm.sh set-wallet <wallet_name> <Password>"
-    exec sleep infinity
-fi
-export $(cat "$ENV_FILE" | xargs)
-
 exec supervisord
