@@ -16,8 +16,10 @@ else
         jm.sh set-wallet <wallet_name> <Password>"
         exit 1
     fi
+    COMMAND="$1"
+    shift 1
     export $(cat "$ENV_FILE" | xargs)
-    echo -n "${WALLET_PASS}" | python "$@" --wallet-password-stdin "${WALLET_NAME}"
+    echo -n "${WALLET_PASS}" | python "$COMMAND" --wallet-password-stdin "${WALLET_NAME}" "$@"
 fi
 
 
