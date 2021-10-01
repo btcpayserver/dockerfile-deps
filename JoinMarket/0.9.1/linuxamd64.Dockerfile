@@ -1,7 +1,7 @@
 FROM python:3.9.7-slim-bullseye
 
 RUN apt-get update && \
-    apt-get install -qq --no-install-recommends curl tini sudo procps supervisor \
+    apt-get install -qq --no-install-recommends curl tini sudo procps vim supervisor \
     build-essential automake pkg-config libtool libgmp-dev libltdl-dev python3-dev virtualenv python3-pip supervisor && \
     rm -rf /var/lib/apt/lists/*
 
@@ -26,4 +26,5 @@ COPY docker-entrypoint.sh .
 COPY *.sh ./
 COPY supervisor-conf/*.conf /etc/supervisor/conf.d/
 ENV PATH /src/scripts:$PATH
+EXPOSE 62601
 ENTRYPOINT  [ "tini", "-g", "--", "./docker-entrypoint.sh" ]
