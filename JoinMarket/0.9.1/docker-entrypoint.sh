@@ -6,7 +6,10 @@ cd ..
 cd scripts
 
 # First we restore the default cfg as created by wallet-tool.py generate
-cp "$DEFAULT_CONFIG" "$CONFIG"
+if ! [ -f "$CONFIG" ]; then
+    cp "$DEFAULT_CONFIG" "$CONFIG"
+fi
+
 # For every env variable JM_FOO=BAR, replace the default configuration value of 'foo' by 'bar'
 while IFS='=' read -r -d '' n v; do
     n="${n,,}" # lowercase
