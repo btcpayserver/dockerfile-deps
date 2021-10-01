@@ -1,9 +1,10 @@
 #!/bin/bash
 set -e
 
-cd ..
+pushd . > /dev/null
+cd /src
 . jmvenv/bin/activate
-cd scripts
+popd > /dev/null
 
 if [[ "$1" != "unlockwallet" ]]; then
     exec "$@"
