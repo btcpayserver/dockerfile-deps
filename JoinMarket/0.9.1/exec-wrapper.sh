@@ -6,9 +6,7 @@ cd /src
 . jmvenv/bin/activate
 popd > /dev/null
 
-if [[ "$1" != "unlockwallet" ]]; then
-    exec "$@"
-else
+if [[ "$1" == "unlockwallet" ]]; then
     shift 1
     if ! [ -f "${ENV_FILE}" ]; then
         echo "You need to initialize the wallet.
@@ -16,10 +14,19 @@ else
         jm.sh set-wallet <wallet_name> <Password>"
         exit 1
     fi
-    COMMAND="$1"
-    shift 1
     export $(cat "$ENV_FILE" | xargs)
-    echo -n "${WALLET_PASS}" | python "$COMMAND" --wallet-password-stdin "${WALLET_NAME}" "$@"
+    if [[ "$1" == "nopass" ]]; then
+        shift 1
+        COMMAND="$1"
+        shift 1
+        $COMMAND "${WALLET_NAME}" "$@"
+    else
+        COMMAND="$1"
+        shift 1
+        echo -n "${WALLET_PASS}" | $COMMAND --wallet-password-stdin "${WALLET_NAME}" "$@"
+    fi
+else
+    exec "$@"
 fi
 
 
