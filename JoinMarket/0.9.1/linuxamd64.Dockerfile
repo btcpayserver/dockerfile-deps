@@ -1,8 +1,8 @@
 FROM python:3.9.7-slim-bullseye
 
 RUN apt-get update && \
-    apt-get install -qq --no-install-recommends curl tini sudo procps \
-    build-essential automake pkg-config libtool libgmp-dev libltdl-dev python3-dev virtualenv python3-pip && \
+    apt-get install -qq --no-install-recommends curl tini sudo procps supervisor \
+    build-essential automake pkg-config libtool libgmp-dev libltdl-dev python3-dev virtualenv python3-pip supervisor && \
     rm -rf /var/lib/apt/lists/*
 
 ENV JM_VERSION 0.9.1
@@ -18,10 +18,12 @@ ENV CONFIG ${DATADIR}/joinmarket.cfg
 ENV DEFAULT_CONFIG /root/default.cfg
 ENV ENV_FILE "${DATADIR}/.env"
 RUN . jmvenv/bin/activate && cd /src/scripts && \
+    pip install matplotlib && \
     (python wallet-tool.py generate || true) \
     && cp "${CONFIG}" "${DEFAULT_CONFIG}"
 WORKDIR /src/scripts
 COPY docker-entrypoint.sh .
 COPY *.sh ./
+COPY supervisor-conf/*.conf /etc/supervisor/conf.d/
 ENV PATH /src/scripts:$PATH
 ENTRYPOINT  [ "tini", "-g", "--", "./docker-entrypoint.sh" ]
