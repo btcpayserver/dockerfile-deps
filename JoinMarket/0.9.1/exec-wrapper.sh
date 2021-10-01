@@ -5,7 +5,7 @@ cd ..
 . jmvenv/bin/activate
 cd scripts
 
-if [[ "$1" == "unlockwallet" ]]; then
+if [[ "$1" != "unlockwallet" ]]; then
     exec "$@"
 else
     shift 1
