@@ -1,4 +1,4 @@
-FROM debian:slim-bullseye as builder
+FROM debian:bullseye-slim as builder
 RUN apt-get update && apt-get install -qq --no-install-recommends qemu-user-static
 
 FROM arm32v7/python:3.9.7-slim-bullseye
