@@ -16,7 +16,7 @@ WORKDIR /src
 RUN curl -fsSL "https://codeload.github.com/JoinMarket-Org/joinmarket-clientserver/tar.gz/refs/tags/v${JM_VERSION}" > "${JM_FILENAME}" && \
     tar  --strip-components=1 -xvf "${JM_FILENAME}" && rm "${JM_FILENAME}"
 
-RUN ./install.sh
+RUN ./install.sh --disable-secp-check --without-qt
 ENV DATADIR /root/.joinmarket
 ENV CONFIG ${DATADIR}/joinmarket.cfg
 ENV DEFAULT_CONFIG /root/default.cfg
