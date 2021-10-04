@@ -1,13 +1,22 @@
 FROM debian:bullseye-slim as builder
 RUN apt-get update && apt-get install -qq --no-install-recommends qemu-user-static
 
+FROM arm32v7/python:3.9.7-slim-bullseye as cryptographybuilder
+
+COPY --from=builder /usr/bin/qemu-arm-static /usr/bin/qemu-arm-static
+
+RUN apt-get update && \
+    apt-get install -qq --no-install-recommends build-essential libssl-dev libffi-dev rustc && \
+    rm -rf /var/lib/apt/lists/*
+RUN pip install cryptography==3.3.2
+
 FROM arm32v7/python:3.9.7-slim-bullseye
 
 COPY --from=builder /usr/bin/qemu-arm-static /usr/bin/qemu-arm-static
+COPY --from=cryptographybuilder /root/.cache /root/.cache
 RUN apt-get update && \
     apt-get install -qq --no-install-recommends curl tini sudo procps vim supervisor \
     build-essential automake pkg-config libtool libgmp-dev libltdl-dev python3-dev virtualenv python3-pip supervisor && \
-    libssl-dev && \
     rm -rf /var/lib/apt/lists/*
 
 ENV JM_VERSION 0.9.1
@@ -23,7 +32,6 @@ ENV CONFIG ${DATADIR}/joinmarket.cfg
 ENV DEFAULT_CONFIG /root/default.cfg
 ENV ENV_FILE "${DATADIR}/.env"
 RUN . jmvenv/bin/activate && cd /src/scripts && \
-    pip install matplotlib && \
     (python wallet-tool.py generate || true) \
     && cp "${CONFIG}" "${DEFAULT_CONFIG}"
 WORKDIR /src/scripts
