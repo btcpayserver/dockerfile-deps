@@ -7,6 +7,7 @@ COPY --from=builder /usr/bin/qemu-arm-static /usr/bin/qemu-arm-static
 RUN apt-get update && \
     apt-get install -qq --no-install-recommends curl tini sudo procps vim supervisor \
     build-essential automake pkg-config libtool libgmp-dev libltdl-dev python3-dev virtualenv python3-pip supervisor && \
+    libssl-dev && \
     rm -rf /var/lib/apt/lists/*
 
 ENV JM_VERSION 0.9.1
