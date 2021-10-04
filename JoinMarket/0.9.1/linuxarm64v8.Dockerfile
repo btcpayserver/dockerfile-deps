@@ -3,6 +3,7 @@ RUN apt-get update && apt-get install -qq --no-install-recommends qemu-user-stat
 
 FROM arm64v8/python:3.9.7-slim-bullseye
 
+COPY --from=builder /usr/bin/qemu-arm-static /usr/bin/qemu-arm-static
 RUN apt-get update && \
     apt-get install -qq --no-install-recommends curl tini sudo procps vim supervisor \
     build-essential automake pkg-config libtool libgmp-dev libltdl-dev python3-dev virtualenv python3-pip supervisor && \
