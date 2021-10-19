@@ -1,7 +1,7 @@
 FROM python:3.9.7-slim-bullseye
 
 RUN apt-get update && \
-    apt-get install -qq --no-install-recommends curl tini sudo procps vim git \
+    apt-get install -qq --no-install-recommends curl tini sudo procps vim git iproute2 \
     build-essential automake pkg-config libtool libgmp-dev libltdl-dev python3-dev virtualenv python3-pip supervisor && \
     rm -rf /var/lib/apt/lists/*
 

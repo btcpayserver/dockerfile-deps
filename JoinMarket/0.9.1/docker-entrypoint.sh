@@ -5,6 +5,9 @@ cd ..
 . jmvenv/bin/activate
 cd scripts
 
+JM_onion_serving_host="$(/sbin/ip route|awk '/default/ { print $3 }')"
+
+
 # First we restore the default cfg as created by wallet-tool.py generate
 if ! [ -f "$CONFIG" ]; then
     cp "$DEFAULT_CONFIG" "$CONFIG"
