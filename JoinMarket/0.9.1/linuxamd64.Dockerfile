@@ -5,11 +5,11 @@ RUN apt-get update && \
     build-essential automake pkg-config libtool libgmp-dev libltdl-dev python3-dev virtualenv python3-pip supervisor && \
     rm -rf /var/lib/apt/lists/*
 
-ENV JM_REPO https://github.com/JoinMarket-Org/joinmarket-clientserver
-ENV JM_REF payjoin_onion_host_location
+ENV REPO https://github.com/JoinMarket-Org/joinmarket-clientserver
+ENV REPO_REF payjoin_onion_host_location
 
 WORKDIR /src
-RUN git clone "$JM_REPO" . && git checkout "$JM_REF"
+RUN git clone "$REPO" . && git checkout "$REPO_REF"
 
 RUN ./install.sh --disable-secp-check --without-qt
 ENV DATADIR /root/.joinmarket
