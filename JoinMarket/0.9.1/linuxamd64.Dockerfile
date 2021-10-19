@@ -1,16 +1,15 @@
 FROM python:3.9.7-slim-bullseye
 
 RUN apt-get update && \
-    apt-get install -qq --no-install-recommends curl tini sudo procps vim supervisor \
+    apt-get install -qq --no-install-recommends curl tini sudo procps vim git \
     build-essential automake pkg-config libtool libgmp-dev libltdl-dev python3-dev virtualenv python3-pip supervisor && \
     rm -rf /var/lib/apt/lists/*
 
-ENV JM_VERSION 0.9.1
-ENV JM_FILENAME v${JM_VERSION}.tar.jz
+ENV JM_REPO https://github.com/JoinMarket-Org/joinmarket-clientserver
+ENV JM_REF payjoin_onion_host_location
 
 WORKDIR /src
-RUN curl -fsSL "https://codeload.github.com/JoinMarket-Org/joinmarket-clientserver/tar.gz/refs/tags/v${JM_VERSION}" > "${JM_FILENAME}" && \
-    tar  --strip-components=1 -xvf "${JM_FILENAME}" && rm "${JM_FILENAME}"
+RUN git clone "$JM_REPO" . && git checkout "$JM_REF"
 
 RUN ./install.sh --disable-secp-check --without-qt
 ENV DATADIR /root/.joinmarket
@@ -26,5 +25,5 @@ COPY docker-entrypoint.sh .
 COPY *.sh ./
 COPY supervisor-conf/*.conf /etc/supervisor/conf.d/
 ENV PATH /src/scripts:$PATH
-EXPOSE 62601
+EXPOSE 62601 80 8080
 ENTRYPOINT  [ "tini", "-g", "--", "./docker-entrypoint.sh" ]
