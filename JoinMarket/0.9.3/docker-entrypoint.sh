@@ -13,6 +13,23 @@ if ! [ -f "$CONFIG" ]; then
     cp "$DEFAULT_CONFIG" "$CONFIG"
 fi
 
+if ! [ -f "$AUTO_START" ]; then
+    cp "$DEFAULT_AUTO_START" "$AUTO_START"
+fi
+
+# auto start services
+while read p; do
+  [[ "$p" == "" ]] && continue
+  [[ "$p" == "#"* ]] && continue
+  echo "Auto start: $p"
+  file_path="/etc/supervisor/conf.d/$p.conf"
+  if [ -f "$file_path" ]; then
+    sed -i 's/autostart=false/autostart=true/g' $file_path
+  else
+    echo "$file_path not found"
+  fi
+done <peptides.txt
+
 # For every env variable JM_FOO=BAR, replace the default configuration value of 'foo' by 'bar'
 while IFS='=' read -r -d '' n v; do
     n="${n,,}" # lowercase
