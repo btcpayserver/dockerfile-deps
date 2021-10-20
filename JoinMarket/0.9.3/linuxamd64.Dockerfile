@@ -25,7 +25,7 @@ RUN . jmvenv/bin/activate && cd /src/scripts && \
 WORKDIR /src/scripts
 COPY docker-entrypoint.sh .
 COPY *.sh ./
-COPY autostart /root/
+COPY autostart $DATADIR/
 COPY supervisor-conf/*.conf /etc/supervisor/conf.d/
 ENV PATH /src/scripts:$PATH
 EXPOSE 62601 8080
