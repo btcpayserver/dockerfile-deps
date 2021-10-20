@@ -15,7 +15,7 @@ RUN ./install.sh --disable-secp-check --without-qt
 ENV DATADIR /root/.joinmarket
 ENV CONFIG ${DATADIR}/joinmarket.cfg
 ENV DEFAULT_CONFIG /root/default.cfg
-ENV DEFAULT_AUTO_START ${DATADIR}/autostart
+ENV DEFAULT_AUTO_START /root/autostart
 ENV AUTO_START ${DATADIR}/autostart
 ENV ENV_FILE "${DATADIR}/.env"
 RUN . jmvenv/bin/activate && cd /src/scripts && \
@@ -25,7 +25,7 @@ RUN . jmvenv/bin/activate && cd /src/scripts && \
 WORKDIR /src/scripts
 COPY docker-entrypoint.sh .
 COPY *.sh ./
-COPY autostart $DATADIR/
+COPY autostart /root/
 COPY supervisor-conf/*.conf /etc/supervisor/conf.d/
 ENV PATH /src/scripts:$PATH
 EXPOSE 62601 8080
