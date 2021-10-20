@@ -28,7 +28,7 @@ while read p; do
   else
     echo "$file_path not found"
   fi
-done <peptides.txt
+done <$AUTO_START
 
 # For every env variable JM_FOO=BAR, replace the default configuration value of 'foo' by 'bar'
 while IFS='=' read -r -d '' n v; do
