@@ -12,6 +12,7 @@ if [[ "$CURRENT_PGVERSION" != "$EXPECTED_PGVERSION" ]] && \
    [[ "$CURRENT_PGVERSION" != "" ]]; then
 
     if ! [ -f "/usr/lib/postgresql/$CURRENT_PGVERSION/bin/pg_upgrade" ]; then
+        echo "Trying to install Postgres $CURRENT_PGVERSION migration tools"
         sed -i "s/$/ $CURRENT_PGVERSION/" /etc/apt/sources.list.d/pgdg.list
         if ! apt-get update; then
             echo "apt-get update failed. Are you using raspberry pi 4? If yes, please follow https://blog.samcater.com/fix-workaround-rpi4-docker-libseccomp2-docker-20/"

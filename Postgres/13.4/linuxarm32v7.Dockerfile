@@ -1,4 +1,11 @@
+FROM  postgres:13.4 as downloader
+
+RUN set -ex \
+	&& apt-get update \
+	&& apt-get install -qq --no-install-recommends qemu-user-static binfmt-support
+
 FROM --platform=arm  postgres:13.4
+COPY --from=downloader /usr/bin/qemu-arm-static /usr/bin/qemu-arm-static
 
 # Postgres doesn't ship packages for 9.6
 ENV PREVIOUS_VERSION 9.6
