@@ -56,9 +56,15 @@ if [[ "$CURRENT_PGVERSION" != "$EXPECTED_PGVERSION" ]] && \
     
     chmod 700 "$PGDATAOLD" "$PGDATANEW"
     chown postgres .
-	chown -R postgres "$PGDATAOLD" "$PGDATANEW" "$PGDATABASE"
-	if [ ! -s "$PGDATANEW/PG_VERSION" ]; then
-		PGDATA="$PGDATANEW" eval "gosu postgres initdb $POSTGRES_INITDB_ARGS"
+    chown -R postgres "$PGDATAOLD" "$PGDATANEW" "$PGDATABASE"
+    [[ "$POSTGRES_USER" ]] && export PGUSER="$POSTGRES_USER"
+    [[ "$POSTGRES_PASSWORD" ]] && export PGPASSWORD="$POSTGRES_PASSWORD"
+    if [ ! -s "$PGDATANEW/PG_VERSION" ]; then
+        if [[ "$PGUSER" ]]; then
+            PGDATA="$PGDATANEW" eval "gosu postgres initdb -U$PGUSER $POSTGRES_INITDB_ARGS"
+        else
+            PGDATA="$PGDATANEW" eval "gosu postgres initdb $POSTGRES_INITDB_ARGS"
+        fi
 	fi
 
     gosu postgres pg_upgrade
@@ -68,6 +74,9 @@ if [[ "$CURRENT_PGVERSION" != "$EXPECTED_PGVERSION" ]] && \
     rm -r "$PGDATANEW"
     ./delete_old_cluster.sh
     rm ./analyze_new_cluster.sh
+    unset PGUSER
+    unset PGPASSWORD
+    unset PGDATABASE
 fi
 
 if [ -f "docker-entrypoint.sh" ]; then
