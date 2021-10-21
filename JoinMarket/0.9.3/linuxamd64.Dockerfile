@@ -6,7 +6,7 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 ENV REPO https://github.com/JoinMarket-Org/joinmarket-clientserver
-ENV REPO_REF v0.9.3dev-btcpayserver
+ENV REPO_REF v0.9.3
 
 WORKDIR /src
 RUN git clone "$REPO" . --depth=10 --branch "$REPO_REF" && git checkout "$REPO_REF"
