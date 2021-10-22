@@ -57,14 +57,14 @@ if [[ "$CURRENT_PGVERSION" != "$EXPECTED_PGVERSION" ]] && \
                         -not -wholename "$PGDATAOLD" \
                         -not -wholename "$PGDATANEW" \
                         -exec mv {} "$PGDATAOLD/" \;
-
-        chmod 700 "$PGDATAOLD" "$PGDATANEW"
-        chown postgres .
-        chown -R postgres "$PGDATAOLD" "$PGDATANEW" "$PGDATABASE"
         cp "$PGDATAOLD/PG_VERSION" "$PGDATABASE/PG_MIGRATING_FROM_VERSION"
     else
         echo "Previous migration failed, trying one more time..."
     fi
+
+    chmod 700 "$PGDATAOLD" "$PGDATANEW"
+    chown postgres .
+    chown -R postgres "$PGDATAOLD" "$PGDATANEW" "$PGDATABASE"
 
     [[ "$POSTGRES_USER" ]] && export PGUSER="$POSTGRES_USER"
     [[ "$POSTGRES_PASSWORD" ]] && export PGPASSWORD="$POSTGRES_PASSWORD"
@@ -77,8 +77,19 @@ if [[ "$CURRENT_PGVERSION" != "$EXPECTED_PGVERSION" ]] && \
 	fi
 
     if ! gosu postgres pg_upgrade; then
-        echo "Failed to upgrade the server"
+        echo "Failed to upgrade the server, showing pg_upgrade_server.log"
         cat pg_upgrade_server.log
+        cp *.log "$PGDATABASE/"
+        if [ -f "$PGDATAOLD/PG_VERSION" ] && [ -f "$PGDATANEW/PG_VERSION" ]; then
+            echo "Cleaning up the new cluster"
+            rm -r $PGDATANEW/*
+        fi
+
+        # If the db hasn't started cleanly, this may solve it.
+        echo "Attempt to start/stop the old cluster if it hasn't exit cleanly"
+        gosu postgres $PGBINOLD/pg_ctl start -w -D $PGDATAOLD
+        gosu postgres $PGBINOLD/pg_ctl stop -w -D $PGDATAOLD
+
         exit 1
     fi
 
