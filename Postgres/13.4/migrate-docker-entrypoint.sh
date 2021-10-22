@@ -67,7 +67,12 @@ if [[ "$CURRENT_PGVERSION" != "$EXPECTED_PGVERSION" ]] && \
         fi
 	fi
 
-    gosu postgres pg_upgrade
+    if ! gosu postgres pg_upgrade; then
+        echo "Failed to upgrade the server"
+        cat pg_upgrade_server.log
+        exit 1
+    fi
+
     rm $PGDATANEW/*.conf
     mv $PGDATANEW/* "$PGDATABASE"
     mv $PGDATAOLD/*.conf "$PGDATABASE"
