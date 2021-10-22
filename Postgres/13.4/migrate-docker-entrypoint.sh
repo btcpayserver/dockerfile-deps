@@ -6,6 +6,9 @@ CURRENT_PGVERSION=""
 EXPECTED_PGVERSION="$PG_MAJOR"
 if [[ -f "/var/lib/postgresql/data/PG_VERSION" ]]; then
     CURRENT_PGVERSION="$(cat /var/lib/postgresql/data/PG_VERSION)"
+elif [[ -f "/var/lib/postgresql/data/PG_MIGRATING_FROM_VERSION" ]]; then
+    echo "Previous migration failed"
+    CURRENT_PGVERSION="$(cat /var/lib/postgresql/data/PG_MIGRATING_FROM_VERSION)"
 fi
 
 if [[ "$CURRENT_PGVERSION" != "$EXPECTED_PGVERSION" ]] && \
@@ -48,15 +51,21 @@ if [[ "$CURRENT_PGVERSION" != "$EXPECTED_PGVERSION" ]] && \
     export PGDATAOLD="/var/lib/postgresql/data/$CURRENT_PGVERSION"
     export PGDATANEW="/var/lib/postgresql/data/$EXPECTED_PGVERSION"
 
-    mkdir -p "$PGDATANEW" "$PGDATAOLD"
-    find "$PGDATABASE" -maxdepth 1 -mindepth 1 \
-                      -not -wholename "$PGDATAOLD" \
-                      -not -wholename "$PGDATANEW" \
-                      -exec mv {} "$PGDATAOLD/" \;
-    
-    chmod 700 "$PGDATAOLD" "$PGDATANEW"
-    chown postgres .
-    chown -R postgres "$PGDATAOLD" "$PGDATANEW" "$PGDATABASE"
+    if ! [ -f "$PGDATABASE/PG_MIGRATING_FROM_VERSION" ]; then
+        mkdir -p "$PGDATANEW" "$PGDATAOLD"
+        find "$PGDATABASE" -maxdepth 1 -mindepth 1 \
+                        -not -wholename "$PGDATAOLD" \
+                        -not -wholename "$PGDATANEW" \
+                        -exec mv {} "$PGDATAOLD/" \;
+
+        chmod 700 "$PGDATAOLD" "$PGDATANEW"
+        chown postgres .
+        chown -R postgres "$PGDATAOLD" "$PGDATANEW" "$PGDATABASE"
+        cp "$PGDATAOLD/PG_VERSION" "$PGDATABASE/PG_MIGRATING_FROM_VERSION"
+    else
+        echo "Previous migration failed, trying one more time..."
+    fi
+
     [[ "$POSTGRES_USER" ]] && export PGUSER="$POSTGRES_USER"
     [[ "$POSTGRES_PASSWORD" ]] && export PGPASSWORD="$POSTGRES_PASSWORD"
     if [ ! -s "$PGDATANEW/PG_VERSION" ]; then
@@ -73,6 +82,7 @@ if [[ "$CURRENT_PGVERSION" != "$EXPECTED_PGVERSION" ]] && \
         exit 1
     fi
 
+    rm "$PGDATABASE/PG_MIGRATING_FROM_VERSION"
     rm $PGDATANEW/*.conf
     mv $PGDATANEW/* "$PGDATABASE"
     mv $PGDATAOLD/*.conf "$PGDATABASE"
