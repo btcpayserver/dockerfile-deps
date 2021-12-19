@@ -6,7 +6,7 @@ RUN set -ex \
 	&& apt-get install -qq --no-install-recommends ca-certificates dirmngr gosu wget
 
 ENV ELEMENTS_VERSION 0.21.0.1
-ENV ELEMENTS_URL https://github.com/ElementsProject/elements/releases/download/elements-0.21.0.1/elements-0.21.0.1-aarch64-linux-gnu.tar.gz
+ENV ELEMENTS_URL https://github.com/ElementsProject/elements/releases/download/elements-0.21.0.1/elements-elements-0.21.0.1-aarch64-linux-gnu.tar.gz
 ENV ELEMENTS_SHA256 b34120a11c1fac41f150fb3a28dd5825e372c049723066280e51302f8b04ed90
 
 # install elements binaries
@@ -15,7 +15,7 @@ RUN set -ex \
 	&& wget -qO elements.tar.gz "$ELEMENTS_URL" \
 	&& echo "$ELEMENTS_SHA256 elements.tar.gz" | sha256sum -c - \
 	&& mkdir bin \
-	&& tar -xzvf elements.tar.gz -C /tmp/bin --strip-components=2 "elements-$ELEMENTS_VERSION/bin/elements-cli" "elements-$ELEMENTS_VERSION/bin/elementsd" \
+	&& tar -xzvf elements.tar.gz -C /tmp/bin --strip-components=2 "elements-elements-$ELEMENTS_VERSION/bin/elements-cli" "elements-elements-$ELEMENTS_VERSION/bin/elementsd" \
 	&& cd bin \
 	&& wget -qO gosu "https://github.com/tianon/gosu/releases/download/1.11/gosu-arm64" \
 	&& echo "5e279972a1c7adee65e3b5661788e8706594b458b7ce318fecbd392492cc4dbd gosu" | sha256sum -c -
