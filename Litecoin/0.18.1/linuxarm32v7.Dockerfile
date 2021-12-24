@@ -3,7 +3,7 @@ FROM debian:buster-slim as builder
 
 RUN set -ex \
 	&& apt-get update \
-	&& apt-get install -qq --no-install-recommends ca-certificates dirmngr gosu wget
+	&& apt-get install -qq --no-install-recommends ca-certificates dirmngr gosu wget qemu-user-static binfmt-support
 
 ENV LITECOIN_VERSION 0.18.1
 ENV LITECOIN_URL https://download.litecoin.org/litecoin-${LITECOIN_VERSION}/linux/litecoin-${LITECOIN_VERSION}-arm-linux-gnueabihf.tar.gz
@@ -24,7 +24,7 @@ RUN set -ex \
 FROM debian:buster-slim
 
 COPY --from=builder "/tmp/bin" /usr/local/bin
-#EnableQEMU COPY qemu-arm-static /usr/bin
+COPY --from=builder /usr/bin/qemu-arm-static /usr/bin/qemu-arm-static
 
 RUN chmod +x /usr/local/bin/gosu && groupadd -r bitcoin && useradd -r -m -g bitcoin bitcoin
 
