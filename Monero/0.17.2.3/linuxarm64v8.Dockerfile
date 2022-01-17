@@ -2,8 +2,8 @@
 FROM arm64v8/debian:stretch-slim
 
 # Set necessary environment variables
-ENV FILE=monero-linux-armv8-v0.17.3.0.tar.bz2
-ENV FILE_CHECKSUM=8fdb5761f6f4345dc670d184144ce8c2fa56eeb1609ed169e79b202fcca20f7d
+ENV FILE=monero-linux-armv8-v0.17.2.3.tar.bz2
+ENV FILE_CHECKSUM=bbff804dc6fe7d54895ae073f0abfc45ed8819d0585fe00e32080ed2268dc250
 
 # Set SHELL options per https://github.com/hadolint/hadolint/wiki/DL4006
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
