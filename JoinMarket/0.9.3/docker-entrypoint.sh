@@ -30,10 +30,11 @@ while read p; do
   fi
 done <$AUTO_START
 
-# For every env variable JM_FOO=BAR, replace the default configuration value of 'foo' by 'bar'
-while IFS='=' read -r -d '' n v; do
-    n="${n,,}" # lowercase
+# For every env variable JM_FOO=BAR, replace the default configuration value of 'foo' by 'BAR'
+while IFS='=' read -r -d '' envkey parsedval; do
+    n="${envkey,,}" # lowercase
     if [[ "$n" =  jm_* ]]; then
+        v=${!envkey} # reread environment variable - characters might have been dropped (e.g 'ending in =')
         n="${n:3}" # drop jm_
         sed -i "s/^$n = .*/$n = $v/g" "$CONFIG" || echo "Couldn't set : $n = $v, please modify $CONFIG manually"
     fi
