@@ -1,19 +1,17 @@
 FROM debian:bullseye-slim as builder
 RUN apt-get update && apt-get install -qq --no-install-recommends qemu-user-static
 
-FROM arm32v7/python:3.9.7-slim-bullseye as cryptographybuilder
-
-
+#FROM arm32v7/python:3.9.7-slim-bullseye as cryptographybuilder
 #COPY --from=builder /usr/bin/qemu-arm-static /usr/bin/qemu-arm-static
 #RUN apt-get update && apt-get install -qq --no-install-recommends build-essential libssl-dev libffi-dev rustc
 #RUN pip install cryptography==3.3.2
 
-RUN apt-get update && apt-get install -qq --no-install-recommends wget
-
 # We use a prebuilt image, because our builder on circleci timeout after 1H and the build take too long
+FROM builder as cryptographybuilder
+RUN apt-get install -qq --no-install-recommends wget
 ENV CRYPTO_TAR="cryptography-3.3.2-pip-arm32v7.tar"
 RUN mkdir -p /root/.cache && cd /root/.cache && \
-    wget -qO ${CRYPTO_TAR} "https://aois.blob.core.windows.net/public/${CRYPTO_TAR}" && \
+    wget -qO ${CRYPTO_TAR} "http://aois.blob.core.windows.net/public/${CRYPTO_TAR}" && \
     echo "c7dde603057aaa0cb35582dba59ad487262e7f562640867545b1960afaf4f2e4 ${CRYPTO_TAR}" | sha256sum -c - && \
     tar -xvf "${CRYPTO_TAR}" && \
     rm "${CRYPTO_TAR}"
