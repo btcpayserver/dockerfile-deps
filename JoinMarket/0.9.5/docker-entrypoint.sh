@@ -7,7 +7,6 @@ cd scripts
 
 export JM_onion_serving_host="$(/sbin/ip route|awk '/src/ { print $9 }')"
 
-
 # First we restore the default cfg as created by wallet-tool.py generate
 if ! [ -f "$CONFIG" ]; then
     cp "$DEFAULT_CONFIG" "$CONFIG"
@@ -31,6 +30,9 @@ if ! [ -f "${DATADIR}/ssl/key.pem" ]; then
       && openssl req -newkey rsa:4096 -x509 -sha256 -days 3650 -nodes -out cert.pem -keyout key.pem -subj "$subj" \
       && popd
 fi
+
+# ensure 'logs' directory exists
+mkdir -p "${DATADIR}/logs"
 
 # auto start services
 while read p; do
