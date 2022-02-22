@@ -17,6 +17,12 @@ if ! [ -f "$AUTO_START" ]; then
     cp "$DEFAULT_AUTO_START" "$AUTO_START"
 fi
 
+# setup basic authentication
+BASIC_AUTH_USER=${APP_USER:?APP_USER empty or unset}
+BASIC_AUTH_PASS=${APP_PASSWORD:?APP_PASSWORD empty or unset}
+mkdir -p "${DATADIR}/nginx/"
+echo -e "${BASIC_AUTH_USER}:$(openssl passwd -quiet -6 <<< echo "${BASIC_AUTH_PASS}")\n" > "${DATADIR}/nginx/.htpasswd"
+
 # generate ssl certificates for jmwalletd
 if ! [ -f "${DATADIR}/ssl/key.pem" ]; then
     subj="/C=US/ST=Utah/L=Lehi/O=Your Company, Inc./OU=IT/CN=example.com"
