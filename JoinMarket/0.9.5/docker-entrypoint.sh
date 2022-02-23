@@ -7,7 +7,6 @@ cd scripts
 
 export JM_onion_serving_host="$(/sbin/ip route|awk '/src/ { print $9 }')"
 
-
 # First we restore the default cfg as created by wallet-tool.py generate
 if ! [ -f "$CONFIG" ]; then
     cp "$DEFAULT_CONFIG" "$CONFIG"
@@ -16,6 +15,24 @@ fi
 if ! [ -f "$AUTO_START" ]; then
     cp "$DEFAULT_AUTO_START" "$AUTO_START"
 fi
+
+# setup basic authentication
+BASIC_AUTH_USER=${APP_USER:?APP_USER empty or unset}
+BASIC_AUTH_PASS=${APP_PASSWORD:?APP_PASSWORD empty or unset}
+mkdir -p "${DATADIR}/nginx/"
+echo -e "${BASIC_AUTH_USER}:$(openssl passwd -quiet -6 <<< echo "${BASIC_AUTH_PASS}")\n" > "${DATADIR}/nginx/.htpasswd"
+
+# generate ssl certificates for jmwalletd
+if ! [ -f "${DATADIR}/ssl/key.pem" ]; then
+    subj="/C=US/ST=Utah/L=Lehi/O=Your Company, Inc./OU=IT/CN=example.com"
+    mkdir -p "${DATADIR}/ssl/" \
+      && pushd "$_" \
+      && openssl req -newkey rsa:4096 -x509 -sha256 -days 3650 -nodes -out cert.pem -keyout key.pem -subj "$subj" \
+      && popd
+fi
+
+# ensure 'logs' directory exists
+mkdir -p "${DATADIR}/logs"
 
 # auto start services
 while read p; do
