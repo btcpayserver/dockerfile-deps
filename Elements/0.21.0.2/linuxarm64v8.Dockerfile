@@ -15,7 +15,7 @@ RUN set -ex \
 	&& wget -qO elements.tar.gz "$ELEMENTS_URL" \
 	&& echo "$ELEMENTS_SHA256 elements.tar.gz" | sha256sum -c - \
 	&& mkdir bin \
-	&& tar -xzvf elements.tar.gz -C /tmp/bin --strip-components=2 "elements-elements-$ELEMENTS_VERSION/bin/elements-cli" "elements-elements-$ELEMENTS_VERSION/bin/elementsd" \
+	&& tar -xzvf elements.tar.gz -C /tmp/bin --strip-components=2 "elements-elements-$ELEMENTS_VERSION/bin/elements-cli" "elements-elements-$ELEMENTS_VERSION/bin/elementsd" "elements-elements-$ELEMENTS_VERSION/bin/elements-wallet" \
 	&& cd bin \
 	&& wget -qO gosu "https://github.com/tianon/gosu/releases/download/1.11/gosu-arm64" \
 	&& echo "5e279972a1c7adee65e3b5661788e8706594b458b7ce318fecbd392492cc4dbd gosu" | sha256sum -c -
