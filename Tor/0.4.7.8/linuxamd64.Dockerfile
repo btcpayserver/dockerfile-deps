@@ -2,11 +2,10 @@
 # Dockerfile for Tor Relay Server with obfs4proxy (Multi-Stage build)
 
 FROM alpine:3.13 AS tor-build
-ARG TOR_GPG_KEY=0x6AFEE6D49E92B601
 ENV TOR_VERSION=0.4.7.8
+ENV TOR_HASH=9e9a5c67ad2acdd5f0f8be14ed591fed076b1708abf8344066990a0fa66fe195
 # Install prerequisites
 RUN apk --no-cache add --update \
-        gnupg \
         build-base \
         libevent \
         libevent-dev \
@@ -22,22 +21,7 @@ RUN apk --no-cache add --update \
       && TOR_TARBALL_NAME="tor-${TOR_VERSION}.tar.gz" \
       && TOR_TARBALL_LINK="https://dist.torproject.org/${TOR_TARBALL_NAME}" \
       && wget -q $TOR_TARBALL_LINK \
-      && wget $TOR_TARBALL_LINK.asc \
-    # Reliably fetch the TOR_GPG_KEY
-        && found=''; \
-         	for server in \
-           		ha.pool.sks-keyservers.net \
-           		hkp://keyserver.ubuntu.com:80 \
-           		hkp://p80.pool.sks-keyservers.net:80 \
-               ipv4.pool.sks-keyservers.net \
-               keys.gnupg.net \
-           		pgp.mit.edu \
-         	; do \
-         		echo "Fetching GPG key $TOR_GPG_KEY from $server"; \
-         		gpg --keyserver "$server" --keyserver-options timeout=10 --recv-keys "$TOR_GPG_KEY" && found=yes && break; \
-         	done; \
-         	test -z "$found" && echo >&2 "error: failed to fetch GPG key $TOR_GPG_KEY" && exit 1; \
-        gpg --verify $TOR_TARBALL_NAME.asc \
+      && echo "${TOR_HASH}  ${TOR_TARBALL_NAME}" | sha256sum -c - \
       && tar xf $TOR_TARBALL_NAME \
       && cd tor-$TOR_VERSION \
       && ./configure --disable-unittests --disable-systemd --disable-seccomp --disable-asciidoc \

@@ -11,7 +11,6 @@ RUN wget -qO gosu "https://github.com/tianon/gosu/releases/download/1.13/gosu-ar
 
 FROM debian:buster-slim as tor-build
 
-ARG TOR_GPG_KEY=0x6AFEE6D49E92B601
 ENV TOR_VERSION=0.4.7.8
 ENV TOR_HASH=9e9a5c67ad2acdd5f0f8be14ed591fed076b1708abf8344066990a0fa66fe195
 
@@ -29,7 +28,7 @@ STRIP=${target_host}-strip \
 QEMU_LD_PREFIX=/usr/${target_host} \
 HOST=${target_host}
 
-RUN wget -q https://zlib.net/zlib-1.2.11.tar.gz \
+RUN wget -q https://src.fedoraproject.org/repo/pkgs/R/zlib-1.2.11.tar.gz/sha512/73fd3fff4adeccd4894084c15ddac89890cd10ef105dd5e1835e1e9bbb6a49ff229713bd197d203edfa17c2727700fce65a2a235f07568212d820dca88b528ae/zlib-1.2.11.tar.gz \
 && TAR_NAME=zlib-1.2.11.tar.gz \
 && FOLDER_NAME=zlib-1.2.11 \
 && echo "c3e5e9fdd5004dcb542feda5ee4f0ff0744628baf8ed2dd5d66f8ca1197cb1a1 $TAR_NAME" | sha256sum -c - \
