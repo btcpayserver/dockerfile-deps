@@ -28,7 +28,6 @@ RUN mkdir "$DOGECOIN_DATA" \
 VOLUME /data
 
 COPY docker-entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
 
 EXPOSE 5222 5223 25222 25223 25222 25223
