@@ -1,6 +1,6 @@
 # Explicitly specify arm32v7 base image
 FROM arm32v7/debian:stretch-slim
-
+#EnableQEMU COPY qemu-arm-static /usr/bin
 # Set necessary environment variables for the current Monero version and hash
 ENV FILE=monero-linux-armv7-v0.18.1.0.tar.bz2
 ENV FILE_CHECKSUM=ecba059a2dbbef9f059e37c0f329df037501752dd871719b41104c5d4c6d358b
