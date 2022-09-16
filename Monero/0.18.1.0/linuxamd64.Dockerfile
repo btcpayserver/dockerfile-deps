@@ -1,7 +1,7 @@
-# runtime stage
+# Set base image
 FROM debian:stretch-slim
 
-# Set necessary environment variables
+# Set necessary environment variables for the current Monero version and hash
 ENV FILE=monero-linux-x64-v0.18.1.0.tar.bz2
 ENV FILE_CHECKSUM=9318e522a5cf95bc856772f15d7507fdef2c028e01f70d020078ad5e208f1304
 
