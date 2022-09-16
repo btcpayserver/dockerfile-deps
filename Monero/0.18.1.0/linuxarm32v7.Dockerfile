@@ -1,9 +1,9 @@
-# Set base image
-FROM debian:stretch-slim
+# Explicitly specify arm32v7 base image
+FROM arm32v7/debian:stretch-slim
 
 # Set necessary environment variables for the current Monero version and hash
-ENV FILE=monero-linux-x64-v0.18.1.0.tar.bz2
-ENV FILE_CHECKSUM=9318e522a5cf95bc856772f15d7507fdef2c028e01f70d020078ad5e208f1304
+ENV FILE=monero-linux-armv7-v0.18.1.0.tar.bz2
+ENV FILE_CHECKSUM=ecba059a2dbbef9f059e37c0f329df037501752dd871719b41104c5d4c6d358b
 
 # Set SHELL options per https://github.com/hadolint/hadolint/wiki/DL4006
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
