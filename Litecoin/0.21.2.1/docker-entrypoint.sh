@@ -42,7 +42,7 @@ if [[ "$1" == "litecoin-cli" || "$1" == "litecoin-tx" || "$1" == "litecoind" || 
 	chown -R bitcoin "$BITCOIN_DATA"
 	ln -sfn "$BITCOIN_DATA" /home/bitcoin/.litecoin
 	chown -h bitcoin:bitcoin /home/bitcoin/.litecoin
-
+	rm -f /home/bitcoin/.litecoin/settings.json
 	exec gosu bitcoin "$@"
 else
 	exec "$@"
