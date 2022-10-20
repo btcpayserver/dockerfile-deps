@@ -15,6 +15,19 @@ if [[ "$1" == "litecoin-cli" || "$1" == "litecoin-tx" || "$1" == "litecoind" || 
 		CONFIG_PREFIX=$'mainnet=1\n[main]'
 	fi
 
+	if [[ "$BITCOIN_WALLETDIR" ]] && [[ "$BITCOIN_NETWORK" ]]; then
+		NL=$'\n'
+		WALLETDIR="$BITCOIN_WALLETDIR/${BITCOIN_NETWORK}"
+		WALLETFILE="${WALLETDIR}/wallet.dat"
+		mkdir -p "$WALLETDIR"
+		chown -R bitcoin:bitcoin "$WALLETDIR"
+		CONFIG_PREFIX="${CONFIG_PREFIX}${NL}walletdir=${WALLETDIR}${NL}"
+		if ! [[ -f "${WALLETFILE}" ]]; then
+		  echo "The wallet does not exists, creating it at ${WALLETDIR}..."
+		  gosu bitcoin litecoin-wallet "-datadir=${WALLETDIR}" "-wallet=" create
+		fi
+	fi
+
 	cat <<-EOF > "$BITCOIN_DATA/litecoin.conf"
 	${CONFIG_PREFIX}
 	printtoconsole=1

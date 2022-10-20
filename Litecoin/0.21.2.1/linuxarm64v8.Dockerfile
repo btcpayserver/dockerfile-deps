@@ -15,7 +15,7 @@ RUN set -ex \
 	&& wget -qO litecoin.tar.gz "$LITECOIN_URL" \
 	&& echo "$LITECOIN_SHA256 litecoin.tar.gz" | sha256sum -c - \
 	&& mkdir bin \
-	&& tar -xzvf litecoin.tar.gz -C /tmp/bin --strip-components=2 "litecoin-$LITECOIN_VERSION/bin/litecoin-cli" "litecoin-$LITECOIN_VERSION/bin/litecoind" \
+	&& tar -xzvf litecoin.tar.gz -C /tmp/bin --strip-components=2 "litecoin-$LITECOIN_VERSION/bin/litecoin-cli" "litecoin-$LITECOIN_VERSION/bin/litecoind" "litecoin-$LITECOIN_VERSION/bin/litecoin-wallet" \
 	&& cd bin \
 	&& wget -qO gosu "https://github.com/tianon/gosu/releases/download/1.14/gosu-arm64" \
 	&& echo "73244a858f5514a927a0f2510d533b4b57169b64d2aa3f9d98d92a7a7df80cea gosu" | sha256sum -c -

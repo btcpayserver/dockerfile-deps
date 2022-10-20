@@ -15,7 +15,7 @@ RUN set -ex \
 	&& wget -qO litecoin.tar.gz "$LITECOIN_URL" \
 	&& echo "$LITECOIN_SHA256 litecoin.tar.gz" | sha256sum -c - \
 	&& mkdir bin \
-	&& tar -xzvf litecoin.tar.gz -C /tmp/bin --strip-components=2 "litecoin-$LITECOIN_VERSION/bin/litecoin-cli" "litecoin-$LITECOIN_VERSION/bin/litecoind" \
+	&& tar -xzvf litecoin.tar.gz -C /tmp/bin --strip-components=2 "litecoin-$LITECOIN_VERSION/bin/litecoin-cli" "litecoin-$LITECOIN_VERSION/bin/litecoind" "litecoin-$LITECOIN_VERSION/bin/litecoin-wallet" \
 	&& cd bin \
 	&& wget -qO gosu "https://github.com/tianon/gosu/releases/download/1.11/gosu-armhf" \
 	&& echo "171b4a2decc920de0dd4f49278d3e14712da5fa48de57c556f99bcdabe03552e gosu" | sha256sum -c -
