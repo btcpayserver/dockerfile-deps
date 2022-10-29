@@ -30,6 +30,8 @@ COPY supervisor-conf/*.conf /etc/supervisor/conf.d/
 ENV PATH /src/scripts:$PATH
 # jmwallet daemon
 EXPOSE 28183
+# jmwallet websocket
+EXPOSE 28283
 # payjoin server
 EXPOSE 8080
 # obwatch
