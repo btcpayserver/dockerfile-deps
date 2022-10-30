@@ -7,7 +7,7 @@ RUN set -ex \
 
 ENV DASH_VERSION 18.1.0
 ENV DASH_URL https://github.com/dashpay/dash/releases/download/v${DASH_VERSION}/dashcore-${DASH_VERSION}-aarch64-linux-gnu.tar.gz
-ENV DASH_SHA256 3ad6125a67cb76d195c9bae778e5a717e98436b98951a819411671d05aadc2ce
+ENV DASH_SHA256 6bd0bba4aef957abccdae83bb0d94e3f6ce809862f417cf94cd52e5131463bca
 ENV DASH_ASC_URL https://github.com/dashpay/dash/releases/download/v${DASH_VERSION}/SHA256SUMS.asc
 ENV DASH_PGP_KEY 52527BEDABE87984
 
