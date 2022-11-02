@@ -12,7 +12,7 @@ RUN wget -qO gosu "https://github.com/tianon/gosu/releases/download/1.13/gosu-ar
 FROM debian:buster-slim as tor-build
 
 ENV TOR_VERSION=0.4.7.10
-ENV TOR_HASH=9e9a5c67ad2acdd5f0f8be14ed591fed076b1708abf8344066990a0fa66fe195
+ENV TOR_HASH=647e56dfa59ea36dab052027fcfc7663905c826c03509363c456900ecd435a5b
 
 RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates perl autoconf automake build-essential git libtool python python3 wget gnupg dirmngr git \
   libc6-armhf-cross gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf
