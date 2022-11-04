@@ -21,8 +21,10 @@ FROM arm32v7/python:3.9.7-slim-bullseye
 COPY --from=builder /usr/bin/qemu-arm-static /usr/bin/qemu-arm-static
 COPY --from=cryptographybuilder /root/.cache /root/.cache
 
-RUN apt-get update && apt-get install -qq --no-install-recommends curl tini sudo procps vim git iproute2 \
-    build-essential automake pkg-config libtool libgmp-dev libltdl-dev python3-dev virtualenv python3-pip supervisor && \
+RUN apt-get update && \
+    apt-get install -qq --no-install-recommends gnupg curl tini sudo procps vim git iproute2 \
+    build-essential automake pkg-config libtool libgmp-dev libltdl-dev \
+    python3-dev python3-pip python3-venv virtualenv supervisor && \
     rm -rf /var/lib/apt/lists/*
 
 ENV REPO https://github.com/JoinMarket-Org/joinmarket-clientserver
@@ -38,7 +40,10 @@ ENV DEFAULT_CONFIG /root/default.cfg
 ENV DEFAULT_AUTO_START /root/autostart
 ENV AUTO_START ${DATADIR}/autostart
 ENV ENV_FILE "${DATADIR}/.env"
-RUN . jmvenv/bin/activate && cd /src/scripts && \
+RUN python -m venv jmvenv && \
+    . jmvenv/bin/activate && cd /src/scripts && \
+    python -m pip install --upgrade pip && \
+    pip install matplotlib && \
     (python wallet-tool.py generate || true) \
     && cp "${CONFIG}" "${DEFAULT_CONFIG}"
 WORKDIR /src/scripts
