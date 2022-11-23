@@ -27,8 +27,11 @@ if [[ "$1" == "elements-cli" || "$1" == "elements-tx" || "$1" == "elementsd" || 
 		
 		WALLETDIR="$ELEMENTS_WALLETDIR/${CHAIN}"
 		mkdir -p "$WALLETDIR"	
+		[[ -f "${WALLETDIR}/db.log" ]] && mkdir -p "${WALLETDIR}/${CHAIN}/wallets" && mv "${WALLETDIR}/db.log" "${WALLETDIR}/${CHAIN}/wallets/db.log"
+		[[ -f "${WALLETDIR}/wallet.dat" ]] && mkdir -p "${WALLETDIR}/${CHAIN}/wallets" && mv "${WALLETDIR}/wallet.dat" "${WALLETDIR}/${CHAIN}/wallets/wallet.dat"
 		chown -R elements:elements "$WALLETDIR"
 		CONFIG_PREFIX="${CONFIG_PREFIX}${NL}walletdir=${WALLETDIR}/${CHAIN}/wallets${NL}"
+		WALLETFILE="${WALLETDIR}/${CHAIN}/wallets/wallet.dat"
 		if ! [[ -f "${WALLETFILE}" ]]; then
 		  echo "The wallet does not exists, creating it at ${WALLETDIR}..."
 		  gosu elements elements-wallet "-datadir=${WALLETDIR}" "-wallet=" create
