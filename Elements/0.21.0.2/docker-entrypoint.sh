@@ -28,7 +28,7 @@ if [[ "$1" == "elements-cli" || "$1" == "elements-tx" || "$1" == "elementsd" || 
 		WALLETDIR="$ELEMENTS_WALLETDIR/${CHAIN}"
 		mkdir -p "$WALLETDIR"	
 		chown -R elements:elements "$WALLETDIR"
-		CONFIG_PREFIX="${CONFIG_PREFIX}${NL}walletdir=${WALLETDIR}${NL}"
+		CONFIG_PREFIX="${CONFIG_PREFIX}${NL}walletdir=${WALLETDIR}/${CHAIN}/wallets${NL}"
 		if ! [[ -f "${WALLETFILE}" ]]; then
 		  echo "The wallet does not exists, creating it at ${WALLETDIR}..."
 		  gosu elements elements-wallet "-datadir=${WALLETDIR}" "-wallet=" create
