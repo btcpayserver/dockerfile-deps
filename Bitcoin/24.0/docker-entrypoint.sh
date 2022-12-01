@@ -27,7 +27,7 @@ if [[ "$1" == "bitcoin-cli" || "$1" == "bitcoin-tx" || "$1" == "bitcoind" || "$1
 		CONFIG_PREFIX="${CONFIG_PREFIX}${NL}walletdir=${WALLETDIR}${NL}"
 		if ! [[ -f "${WALLETFILE}" ]]; then
 		  echo "The wallet does not exists, creating it at ${WALLETDIR}..."
-		  gosu bitcoin bitcoin-wallet "-datadir=${WALLETDIR}" "-wallet=" create
+		  gosu bitcoin bitcoin-wallet "-datadir=${WALLETDIR}" "-legacy" "-wallet=" create
 		fi
 	fi
 
