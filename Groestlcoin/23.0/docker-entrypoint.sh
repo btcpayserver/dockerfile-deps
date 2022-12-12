@@ -58,7 +58,7 @@ if [[ "$1" == "groestlcoin-cli" || "$1" == "groestlcoin-tx" || "$1" == "groestlc
 	chown -R groestlcoin "$GROESTLCOIN_DATA"
 	ln -sfn "$GROESTLCOIN_DATA" /home/groestlcoin/.groestlcoin
 	chown -h groestlcoin:groestlcoin /home/groestlcoin/.groestlcoin
-
+	rm -f /home/groestlcoin/.groestlcoin/settings.json
 	exec gosu groestlcoin "$@"
 else
 	exec "$@"
