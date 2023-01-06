@@ -60,6 +60,20 @@ if [[ "$1" == "bitcoin-cli" || "$1" == "bitcoin-tx" || "$1" == "bitcoind" || "$1
 	ln -sfn "$BITCOIN_DATA" /home/bitcoin/.bitcoin
 	chown -h bitcoin:bitcoin /home/bitcoin/.bitcoin
 	rm -f /home/bitcoin/.bitcoin/settings.json
+
+	# peers_dat is routinely corrupted, preventing bitcoind to start, see https://github.com/bitcoin/bitcoin/issues/26599
+	peers_dat="/home/bitcoin/.bitcoin/peers.dat"
+	peers_dat_corrupted="/home/bitcoin/.bitcoin/peers_corrupted.dat"
+	if [[ -f "${peers_dat}" ]]; then
+		actual_hash=$(head -c -32 "${peers_dat}" | sha256sum | cut -c1-64 | xxd -r -p | sha256sum | cut -c1-64)
+		expected_hash=$(tail -c 32 "${peers_dat}" | xxd -ps -c 32)
+		if [[ "${actual_hash}" != "${expected_hash}" ]]; then
+			echo "${peers_dat} is corrupted, moving it to ${peers_dat_corrupted}"
+			rm -f "${peers_dat_corrupted}"
+			mv "${peers_dat}" "${peers_dat_corrupted}"
+		fi
+	fi
+
 	exec gosu bitcoin "$@"
 else
 	exec "$@"
