@@ -12,7 +12,7 @@ jobs:
     steps: 
       - checkout
       - setup_remote_docker:
-          version: 20.10.7
+          version: 20.10.18
 
   # publish jobs require $DOCKERHUB_USER, $DOCKERHUB_PASS defined
   publish_linuxamd64:
@@ -21,7 +21,7 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker:
-          version: 20.10.7
+          version: 20.10.18
       - run:
           command: |
             source ".circleci/parse-tag.sh"
@@ -39,7 +39,7 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker:
-          version: 20.10.7
+          version: 20.10.18
       - run:
           command: |
             source ".circleci/parse-tag.sh"
@@ -64,7 +64,7 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker:
-          version: 20.10.7
+          version: 20.10.18
       - run:
           command: |
             source ".circleci/parse-tag.sh"
@@ -91,14 +91,9 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker:
-          version: 20.10.7
+          version: 20.10.18
       - run:
           command: |
-            # Turn on Experimental features
-            ssh remote-docker <<EOF
-              sudo bash -c 'echo "{\"experimental\": true}" > /etc/docker/daemon.json'
-              sudo systemctl restart docker
-            EOF
             source ".circleci/parse-tag.sh"
             #
             sudo docker $DOCKER_OPTIONS login --username=$DOCKERHUB_USER --password=$DOCKERHUB_PASS
