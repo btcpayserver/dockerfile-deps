@@ -45,6 +45,8 @@ jobs:
             source ".circleci/parse-tag.sh"
             DOCKERHUB_DOCKEFILE="$DOCKERHUB_DOCKEFILE_ARM64"
             DOCKERHUB_DESTINATION="$DOCKERHUB_REPO:$LATEST_TAG-arm64v8"
+            echo "DOCKER_OPTIONS=$DOCKER_OPTIONS"
+            echo "DOCKER_CERT_PATH=$DOCKER_CERT_PATH"
             if [ -f $DOCKERHUB_DOCKEFILE ]; then
                 #
                 # Make sure the builder is copy the arm emulator
