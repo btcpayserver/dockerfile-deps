@@ -1,9 +1,9 @@
 # Use manifest image which support all architecture
-FROM debian:stretch-slim as builder
+FROM debian:bullseye-slim as builder
 
 RUN set -ex \
 	&& apt-get update \
-	&& apt-get install -qq --no-install-recommends ca-certificates dirmngr gosu gpg wget
+	&& apt-get install -qq --no-install-recommends ca-certificates dirmngr gosu gpg gpg-agent wget
 
 ENV DASH_VERSION 19.0.0
 ENV DASH_URL https://github.com/dashpay/dash/releases/download/v${DASH_VERSION}/dashcore-${DASH_VERSION}-aarch64-linux-gnu.tar.gz
@@ -26,7 +26,7 @@ RUN set -ex \
 	&& echo "5e279972a1c7adee65e3b5661788e8706594b458b7ce318fecbd392492cc4dbd gosu" | sha256sum -c -
 
 # Making sure the builder build an arm image despite being x64
-FROM arm64v8/debian:stretch-slim
+FROM arm64v8/debian:bullseye-slim
 
 COPY --from=builder "/tmp/bin" /usr/local/bin
 #EnableQEMU COPY qemu-aarch64-static /usr/bin
