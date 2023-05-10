@@ -1,8 +1,8 @@
-FROM debian:stretch-slim as builder
+FROM debian:bullseye-slim as builder
 
 RUN set -ex \
 	&& apt-get update \
-	&& apt-get install -qq --no-install-recommends ca-certificates dirmngr gosu gpg wget
+	&& apt-get install -qq --no-install-recommends ca-certificates dirmngr gosu gpg gpg-agent wget
 
 ENV DASH_VERSION 19.0.0
 ENV DASH_URL https://github.com/dashpay/dash/releases/download/v${DASH_VERSION}/dashcore-${DASH_VERSION}-x86_64-linux-gnu.tar.gz
@@ -24,7 +24,7 @@ RUN set -ex \
 	&& wget -qO gosu "https://github.com/tianon/gosu/releases/download/1.11/gosu-amd64" \
 	&& echo "0b843df6d86e270c5b0f5cbd3c326a04e18f4b7f9b8457fa497b0454c4b138d7 gosu" | sha256sum -c -
 
-FROM debian:stretch-slim
+FROM debian:bullseye-slim
 COPY --from=builder "/tmp/bin" /usr/local/bin
 
 RUN chmod +x /usr/local/bin/gosu && groupadd -r bitcoin && useradd -r -m -g bitcoin bitcoin
