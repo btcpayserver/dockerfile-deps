@@ -22,6 +22,7 @@ if [[ "$1" == "dash-cli" || "$1" == "dash-tx" || "$1" == "dashd" || "$1" == "tes
 	${BITCOIN_EXTRA_ARGS}
 	EOF
 	chown bitcoin:bitcoin "$BITCOIN_DATA/dash.conf"
+	rm -f "$BITCOIN_DATA/settings.json"
 
 	# ensure correct ownership and linking of data directory
 	# we do not update group ownership here, in case users want to mount
