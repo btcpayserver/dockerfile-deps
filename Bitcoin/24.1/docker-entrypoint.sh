@@ -62,6 +62,7 @@ if [[ "$1" == "bitcoin-cli" || "$1" == "bitcoin-tx" || "$1" == "bitcoind" || "$1
 	rm -f /home/bitcoin/.bitcoin/settings.json
 
 	# peers_dat is routinely corrupted, preventing bitcoind to start, see https://github.com/bitcoin/bitcoin/issues/26599
+	# This should be fixed in 24.1, but doesn't hurt to keep it
 	peers_dat="/home/bitcoin/.bitcoin/peers.dat"
 	peers_dat_corrupted="/home/bitcoin/.bitcoin/peers_corrupted.dat"
 	if [[ -f "${peers_dat}" ]]; then
