@@ -22,10 +22,13 @@ RUN set -ex \
 FROM debian:bullseye-slim
 COPY --from=builder "/tmp/bin" /usr/local/bin
 
+ARG BITCOIN_USER_ID=999
+ARG BITCOIN_GROUP_ID=999
+
 RUN apt-get update && \
     apt-get install -qq --no-install-recommends xxd && \
     rm -rf /var/lib/apt/lists/*
-RUN chmod +x /usr/local/bin/gosu && groupadd -r bitcoin && useradd -r -m -g bitcoin bitcoin
+RUN chmod +x /usr/local/bin/gosu && groupadd -r -g $BITCOIN_GROUP_ID bitcoin && useradd -r -m -u $BITCOIN_USER_ID -g bitcoin bitcoin
 
 # create data directory
 ENV BITCOIN_DATA /data
