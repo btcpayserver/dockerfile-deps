@@ -1,5 +1,5 @@
 # Use manifest image which support all architecture
-FROM debian:stretch-slim as builder
+FROM debian:buster-slim as builder
 
 RUN set -ex \
 	&& apt-get update \
