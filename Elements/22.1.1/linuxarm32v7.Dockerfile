@@ -7,7 +7,7 @@ RUN set -ex \
 
 ENV ELEMENTS_VERSION 22.1.1
 ENV ELEMENTS_URL https://github.com/ElementsProject/elements/releases/download/elements-22.1.1/elements-22.1.1-arm-linux-gnueabihf.tar.gz
-ENV ELEMENTS_SHA256 2482ee6ec4840da17a925ecb1d3ccd93f9778bca70903611b87e676a0dac05ca
+ENV ELEMENTS_SHA256 0c816947bbb22419f3cbf268f5d9ebf4603f5aeff0333a34caff144b1541757f
 
 # install elements binaries
 RUN set -ex \
@@ -15,7 +15,7 @@ RUN set -ex \
 	&& wget -qO elements.tar.gz "$ELEMENTS_URL" \
 	&& echo "$ELEMENTS_SHA256 elements.tar.gz" | sha256sum -c - \
 	&& mkdir bin \
-	&& tar -xzvf elements.tar.gz -C /tmp/bin --strip-components=2 "elements-elements-$ELEMENTS_VERSION/bin/elements-cli" "elements-elements-$ELEMENTS_VERSION/bin/elementsd" "elements-elements-$ELEMENTS_VERSION/bin/elements-wallet" \
+	&& tar -xzvf elements.tar.gz -C /tmp/bin --strip-components=2 "elements-$ELEMENTS_VERSION/bin/elements-cli" "elements-$ELEMENTS_VERSION/bin/elementsd" "elements-$ELEMENTS_VERSION/bin/elements-wallet" \
 	&& cd bin \
 	&& wget -qO gosu "https://github.com/tianon/gosu/releases/download/1.11/gosu-armhf" \
 	&& echo "171b4a2decc920de0dd4f49278d3e14712da5fa48de57c556f99bcdabe03552e gosu" | sha256sum -c -
