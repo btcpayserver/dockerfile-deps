@@ -1,15 +1,13 @@
-# Use manifest image which support all architecture
 FROM debian:bullseye-slim as builder
 
 RUN set -ex \
 	&& apt-get update \
 	&& apt-get install -qq --no-install-recommends ca-certificates dirmngr gosu wget
-RUN apt-get install -qq --no-install-recommends qemu-user-static binfmt-support
 
-ENV GROESTLCOIN_VERSION 24.0.1
-ENV GROESTLCOIN_TARBALL groestlcoin-${GROESTLCOIN_VERSION}-arm-linux-gnueabihf.tar.gz
+ENV GROESTLCOIN_VERSION 25.0
+ENV GROESTLCOIN_TARBALL groestlcoin-${GROESTLCOIN_VERSION}-x86_64-linux-gnu.tar.gz
 ENV GROESTLCOIN_URL https://github.com/Groestlcoin/groestlcoin/releases/download/v$GROESTLCOIN_VERSION/$GROESTLCOIN_TARBALL
-ENV GROESTLCOIN_SHA256 28299bc5eccbf715c9b876467da7c12cd8b5261753ed614a7d3a81c9da79dcb8
+ENV GROESTLCOIN_SHA256 bcca36b5a2f1e83a4fd9888bc0016d3f46f9ef01238dc23a8e03f2f4ac3b9707
 
 # install groestlcoin binaries
 RUN set -ex \
@@ -19,14 +17,11 @@ RUN set -ex \
 	&& mkdir bin \
 	&& tar -xzvf $GROESTLCOIN_TARBALL -C /tmp/bin --strip-components=2 "groestlcoin-$GROESTLCOIN_VERSION/bin/groestlcoin-cli" "groestlcoin-$GROESTLCOIN_VERSION/bin/groestlcoind" "groestlcoin-$GROESTLCOIN_VERSION/bin/groestlcoin-wallet" \
 	&& cd bin \
-	&& wget -qO gosu "https://github.com/tianon/gosu/releases/download/1.11/gosu-armhf" \
-	&& echo "171b4a2decc920de0dd4f49278d3e14712da5fa48de57c556f99bcdabe03552e gosu" | sha256sum -c -
+	&& wget -qO gosu "https://github.com/tianon/gosu/releases/download/1.11/gosu-amd64" \
+	&& echo "0b843df6d86e270c5b0f5cbd3c326a04e18f4b7f9b8457fa497b0454c4b138d7 gosu" | sha256sum -c -
 
-# Making sure the builder build an arm image despite being x64
-FROM arm32v7/debian:bullseye-slim
-
+FROM debian:bullseye-slim
 COPY --from=builder "/tmp/bin" /usr/local/bin
-COPY --from=builder /usr/bin/qemu-arm-static /usr/bin/qemu-arm-static
 
 RUN apt-get update && \
     apt-get install -qq --no-install-recommends xxd && \
