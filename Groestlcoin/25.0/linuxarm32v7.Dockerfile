@@ -6,10 +6,10 @@ RUN set -ex \
 	&& apt-get install -qq --no-install-recommends ca-certificates dirmngr gosu wget
 RUN apt-get install -qq --no-install-recommends qemu-user-static binfmt-support
 
-ENV GROESTLCOIN_VERSION 24.0.1
+ENV GROESTLCOIN_VERSION 25.0
 ENV GROESTLCOIN_TARBALL groestlcoin-${GROESTLCOIN_VERSION}-arm-linux-gnueabihf.tar.gz
 ENV GROESTLCOIN_URL https://github.com/Groestlcoin/groestlcoin/releases/download/v$GROESTLCOIN_VERSION/$GROESTLCOIN_TARBALL
-ENV GROESTLCOIN_SHA256 28299bc5eccbf715c9b876467da7c12cd8b5261753ed614a7d3a81c9da79dcb8
+ENV GROESTLCOIN_SHA256 4e984db13cd6e8294e0b868b3937e7d4eb24464eac371d2978a8338f3f80c16f
 
 # install groestlcoin binaries
 RUN set -ex \

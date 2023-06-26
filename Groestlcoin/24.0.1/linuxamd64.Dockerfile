@@ -1,4 +1,4 @@
-FROM debian:buster-slim as builder
+FROM debian:bullseye-slim as builder
 
 RUN set -ex \
 	&& apt-get update \
@@ -20,9 +20,12 @@ RUN set -ex \
 	&& wget -qO gosu "https://github.com/tianon/gosu/releases/download/1.11/gosu-amd64" \
 	&& echo "0b843df6d86e270c5b0f5cbd3c326a04e18f4b7f9b8457fa497b0454c4b138d7 gosu" | sha256sum -c -
 
-FROM debian:buster-slim
+FROM debian:bullseye-slim
 COPY --from=builder "/tmp/bin" /usr/local/bin
 
+RUN apt-get update && \
+    apt-get install -qq --no-install-recommends xxd && \
+    rm -rf /var/lib/apt/lists/*
 RUN chmod +x /usr/local/bin/gosu && groupadd -r groestlcoin && useradd -r -m -g groestlcoin groestlcoin
 
 # create data directory

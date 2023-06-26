@@ -27,7 +27,7 @@ if [[ "$1" == "groestlcoin-cli" || "$1" == "groestlcoin-tx" || "$1" == "groestlc
 		CONFIG_PREFIX="${CONFIG_PREFIX}${NL}walletdir=${WALLETDIR}${NL}"
 		if ! [[ -f "${WALLETFILE}" ]]; then
 		  echo "The wallet does not exists, creating it at ${WALLETDIR}..."
-		  gosu groestlcoin groestlcoin-wallet "-datadir=${WALLETDIR}" "-wallet=" create
+		  gosu groestlcoin groestlcoin-wallet "-datadir=${WALLETDIR}" "-legacy" "-wallet=" create
 		fi
 	fi
 
