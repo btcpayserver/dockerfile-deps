@@ -32,7 +32,7 @@ COPY ./scripts /scripts/
 RUN find /scripts/ -type f -print0 | xargs -0 chmod a+x
 
 # Create monero user
-RUN adduser --system --group --disabled-password --uid 101 --gid 101 monero && \
+RUN adduser --system --disabled-password --uid 101 --gid 101 monero && \
 	mkdir -p /wallet /home/monero/.bitmonero && \
 	chown -R monero:monero /home/monero/.bitmonero && \
 	chown -R monero:monero /wallet
