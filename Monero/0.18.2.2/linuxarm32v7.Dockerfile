@@ -47,6 +47,9 @@ EXPOSE 18080
 EXPOSE 18081
 EXPOSE 18082
 
+# Set HOME environment variable
+ENV HOME /home/monero
+
 # Switch to user monero
 USER monero
 
