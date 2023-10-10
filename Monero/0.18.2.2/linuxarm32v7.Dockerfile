@@ -32,10 +32,10 @@ COPY ./scripts /scripts/
 RUN find /scripts/ -type f -print0 | xargs -0 chmod a+x
 
 # Create monero user
-RUN addgroup --system --gid 101 monero && \	
-	adduser --system --disabled-password --uid 101 --gid 101 monero && \
+RUN adduser --system --group --disabled-password monero && \
 	mkdir -p /wallet /home/monero/.bitmonero && \
 	chown -R monero:monero /home/monero/.bitmonero && \
+	chown -R monero:monero /home/monero && \
 	chown -R monero:monero /wallet
 
 # Specify necessary volumes
@@ -47,11 +47,9 @@ EXPOSE 18080
 EXPOSE 18081
 EXPOSE 18082
 
-# Set HOME environment variable
-ENV HOME /home/monero
-
 # Switch to user monero
 USER monero
+ENV HOME /home/monero
 
 # Add HEALTHCHECK against get_info endpoint
 HEALTHCHECK --interval=5s --timeout=3s CMD curl --fail http://localhost:18081/get_info || exit 1
