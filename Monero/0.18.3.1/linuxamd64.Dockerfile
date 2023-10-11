@@ -1,5 +1,5 @@
 # Set base image
-FROM debian:stable-slim
+FROM debian:bullseye-slim
 
 # Set necessary environment variables for the current Monero version and hash
 ENV FILE=monero-linux-x64-v0.18.3.1.tar.bz2
