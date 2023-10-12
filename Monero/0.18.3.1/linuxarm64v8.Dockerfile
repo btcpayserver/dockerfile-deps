@@ -2,8 +2,8 @@
 FROM arm64v8/debian:bullseye-slim
 #EnableQEMU COPY qemu-aarch64-static /usr/bin
 # Set necessary environment variables for the current Monero version and hash
-ENV FILE=monero-linux-armv8-v0.18.2.2.tar.bz2
-ENV FILE_CHECKSUM=f3867f2865cb98ab1d18f30adfd9168f397bd07bf7c36550dfe3a2a11fc789ba
+ENV FILE=monero-linux-armv8-v0.18.3.1.tar.bz2
+ENV FILE_CHECKSUM=445032e88dc07e51ac5fff7034752be530d1c4117d8d605100017bcd87c7b21f
 
 # Set SHELL options per https://github.com/hadolint/hadolint/wiki/DL4006
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
