@@ -1,4 +1,4 @@
-FROM debian:bookworm-slim as download
+FROM debian:buster-slim as download
 
 RUN set -ex \
 	&& apt-get update \
@@ -9,10 +9,10 @@ WORKDIR /tmp/bin
 RUN wget -qO gosu "https://github.com/tianon/gosu/releases/download/1.13/gosu-arm64" \
 	  && echo "578b2c70936cae372f6826585f82e76de5858342dd179605a8cb58d58828a079 gosu" | sha256sum -c -
 
-FROM debian:bookworm-slim as tor-build
+FROM debian:buster-slim as tor-build
 
-ENV TOR_VERSION=0.4.8.10
-ENV TOR_HASH=e628b4fab70edb4727715b23cf2931375a9f7685ac08f2c59ea498a178463a86
+ENV TOR_VERSION=0.4.7.10
+ENV TOR_HASH=647e56dfa59ea36dab052027fcfc7663905c826c03509363c456900ecd435a5b
 
 RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates perl autoconf automake build-essential git libtool python python3 wget gnupg dirmngr git \
   libc6-arm64-cross gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
@@ -101,7 +101,7 @@ RUN apt-get install -y pkg-config && wget -q https://dist.torproject.org/tor-${T
 && make install && cd .. && rm $TAR_NAME && rm -rf $FOLDER_NAME \
 && ${STRIP} /usr/aarch64-linux-gnu/bin/tor-* && ${STRIP} /usr/aarch64-linux-gnu/bin/tor
 
-FROM arm64v8/debian:bookworm-slim
+FROM arm64v8/debian:buster-slim
 ENV target_host=aarch64-linux-gnu
 ENV QEMU_LD_PREFIX=/usr/${target_host}
 COPY --from=download /usr/bin/qemu-aarch64-static /usr/bin/qemu-aarch64-static
