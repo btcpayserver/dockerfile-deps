@@ -6,7 +6,7 @@ RUN set -ex \
 
 ENV DASH_VERSION 20.0.2
 ENV DASH_URL https://github.com/dashpay/dash/releases/download/v${DASH_VERSION}/dashcore-${DASH_VERSION}-x86_64-linux-gnu.tar.gz
-ENV DASH_SHA256 31782233a8f64b29367f347193ed7fefd6911f6efdc01bdcf937d8d987b2d2f6f
+ENV DASH_SHA256 1782233a8f64b29367f347193ed7fefd6911f6efdc01bdcf937d8d987b2d2f6f
 ENV DASH_ASC_URL https://github.com/dashpay/dash/releases/download/v${DASH_VERSION}/SHA256SUMS.asc
 ENV DASH_PGP_KEY 52527BEDABE87984
 
