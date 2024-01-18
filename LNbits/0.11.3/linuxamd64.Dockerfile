@@ -25,9 +25,10 @@ RUN mkdir data
 
 RUN poetry install --only main
 
-ENV LNBITS_PORT="5000"
-ENV LNBITS_HOST="0.0.0.0"
+# hardcoded so we can ommit the sh in CMD that was used in upstream lnbits Dockerfile
+#ENV LNBITS_PORT="5000"
+#ENV LNBITS_HOST="0.0.0.0"
 
 EXPOSE 5000
 
-CMD ["sh", "-c", "poetry run lnbits --port $LNBITS_PORT --host $LNBITS_HOST"]
+CMD ["poetry", "run", "lnbits", "--port", "5000", "--host", "0.0.0.0"]
