@@ -1,4 +1,8 @@
-FROM python:3.10-slim-bullseye
+FROM debian:bullseye-slim as builder
+RUN apt-get update && apt-get install -qq --no-install-recommends qemu-user-static
+
+FROM arm64v8/python:3.10-slim-bullseye
+COPY --from=builder /usr/bin/qemu-aarch64-static /usr/bin/qemu-aarch64-static
 
 ENV REPO https://github.com/lnbits/lnbits
 ENV REPO_REF 0.11.3
