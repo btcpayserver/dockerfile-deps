@@ -28,10 +28,13 @@ FROM arm32v7/debian:bullseye-slim
 COPY --from=builder "/tmp/bin" /usr/local/bin
 COPY --from=builder /usr/bin/qemu-arm-static /usr/bin/qemu-arm-static
 
+ARG GROESTLCOIN_USER_ID=999
+ARG GROESTLCOIN_GROUP_ID=999
+
 RUN apt-get update && \
     apt-get install -qq --no-install-recommends xxd && \
     rm -rf /var/lib/apt/lists/*
-RUN chmod +x /usr/local/bin/gosu && groupadd -r groestlcoin && useradd -r -m -g groestlcoin groestlcoin
+RUN chmod +x /usr/local/bin/gosu && groupadd -r -g $GROESTLCOIN_GROUP_ID groestlcoin && useradd -r -m -u $GROESTLCOIN_USER_ID -g groestlcoin groestlcoin
 
 # create data directory
 ENV GROESTLCOIN_DATA /data
