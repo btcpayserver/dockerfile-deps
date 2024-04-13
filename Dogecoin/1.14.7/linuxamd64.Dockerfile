@@ -1,4 +1,4 @@
-FROM debian:stretch-slim
+FROM debian:bookworm-slim
 
 RUN groupadd -r dogecoin && useradd -r -m -g dogecoin dogecoin
 
