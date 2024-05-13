@@ -12,7 +12,7 @@ ENV ELEMENTS_SHA256 9640e40685d25c7053a07ba5ad2319632a8d67bed5b2fbdc815163210b2b
 # install elements binaries
 RUN set -ex \
 	&& cd /tmp \
-	&& wget -qO elements.tar.gz "$ELEMENTS_URL" a\
+	&& wget -qO elements.tar.gz "$ELEMENTS_URL" \
 	&& echo "$ELEMENTS_SHA256 elements.tar.gz" | sha256sum -c - \
 	&& mkdir bin \
 	&& tar -xzvf elements.tar.gz -C /tmp/bin --strip-components=2 "elements-$ELEMENTS_VERSION/bin/elements-cli" "elements-$ELEMENTS_VERSION/bin/elementsd" "elements-$ELEMENTS_VERSION/bin/elements-wallet" \
