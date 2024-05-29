@@ -24,6 +24,7 @@ if [[ -z "$LND_REST_ENDPOINT" ]]; then
       exit 1
    else
       ./wait-for-it.sh clightning_bitcoin_rest:3001 -- echo "CLN is up!"
+   fi
 else
    ./wait-for-it.sh lnd_bitcoin:8080 -- echo "LND is up!"
 fi
