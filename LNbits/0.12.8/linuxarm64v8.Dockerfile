@@ -38,4 +38,6 @@ EXPOSE 5000
 
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 
+COPY wait-for-it.sh /wait-for-it.sh
+
 ENTRYPOINT [ "/docker-entrypoint.sh" ]
