@@ -23,10 +23,10 @@ if [[ -z "$LND_REST_ENDPOINT" ]]; then
       echo "no valid LN implementation configured, can't start LNBits, giving up!"
       exit 1
    else
-      ./wait-for-it.sh clightning_bitcoin_rest:3001 -- echo "CLN is up!"
+      /wait-for-it.sh clightning_bitcoin_rest:3001 -- echo "CLN is up!"
    fi
 else
-   ./wait-for-it.sh lnd_bitcoin:8080 -- echo "LND is up!"
+   /wait-for-it.sh lnd_bitcoin:8080 -- echo "LND is up!"
 fi
 
 exec poetry run lnbits --port 5000 --host 0.0.0.0
