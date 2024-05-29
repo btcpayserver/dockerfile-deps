@@ -36,8 +36,8 @@ RUN poetry install --only main
 
 EXPOSE 5000
 
-COPY docker-entrypoint.sh /docker-entrypoint.sh
+COPY --chmod=0755 docker-entrypoint.sh /docker-entrypoint.sh
 
-COPY wait-for-it.sh /wait-for-it.sh
+COPY --chmod=0755 wait-for-it.sh /wait-for-it.sh
 
 ENTRYPOINT [ "/docker-entrypoint.sh" ]
