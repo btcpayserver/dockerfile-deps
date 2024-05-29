@@ -7,6 +7,12 @@ if [[ "${LND_READY_FILE}" ]]; then
     echo "The chain is fully synched"
 fi
 
+if [[ "${LIGHTNINGD_READY_FILE}" ]]; then
+    echo "Waiting $LIGHTNINGD_READY_FILE to be created..."
+    while [ ! -f "$LIGHTNINGD_READY_FILE" ]; do sleep 1; done
+    echo "The chain is fully synched"
+fi
+
 # wait for LND or CLN
 
 if [[ -z "$LND_REST_ENDPOINT" ]]; then
