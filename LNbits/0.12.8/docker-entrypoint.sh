@@ -23,9 +23,9 @@ if [[ -z "$LND_REST_ENDPOINT" ]]; then
       echo "no valid LN implementation configured, can't start LNBits, giving up!"
       exit 1
    else
-      /wait-for-it.sh clightning_bitcoin_rest:3001 -- echo "CLN is up!"
+      /wait-for-it.sh clightning_bitcoin:3010 -- echo "CLN is up!"
       while true;do
-        wget -T 15 -c -q http://clightning_bitcoin_rest:3001/v1/list-methods && break
+        curl --fail http://clightning_bitcoin:3010/v1/getinfo && break
         echo "clightning returned non 200 response"
       done
    fi
