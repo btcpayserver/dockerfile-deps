@@ -24,9 +24,19 @@ if [[ -z "$LND_REST_ENDPOINT" ]]; then
       exit 1
    else
       /wait-for-it.sh clightning_bitcoin_rest:3001 -- echo "CLN is up!"
+      while true;do
+        wget -T 15 -c -q http://clightning_bitcoin_rest:3001/v1/list-methods && break
+        echo "clightning returned non 200 response"
+      done
    fi
 else
    /wait-for-it.sh lnd_bitcoin:8080 -- echo "LND is up!"
+   while true;do
+     curl --fail --header "Grpc-Metadata-macaroon: $(xxd -ps -u -c 1000  /data/.lightning/admin.macaroon)" http://lnd_bitcoin:8080/v1/getinfo && break
+     echo "lnd returned non 200 response"
+     sleep 2
+   done
+
 fi
 
 exec poetry run lnbits --port 5000 --host 0.0.0.0
