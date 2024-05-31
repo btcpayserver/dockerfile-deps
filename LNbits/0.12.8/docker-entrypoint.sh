@@ -23,7 +23,7 @@ if [[ -z "$LND_REST_ENDPOINT" ]]; then
       echo "no valid LN implementation configured, can't start LNBits, giving up!"
       exit 1
    else
-      if [[ "${$CORELIGHTNING_RPC}" ]]; then
+      if [[ "$$CORELIGHTNING_RPC" ]]; then
          echo "Waiting $CORELIGHTNING_RPC to be created..."
          while [ ! -f "$CORELIGHTNING_RPC" ]; do sleep 1; done
          echo "lightning-rpc created"
