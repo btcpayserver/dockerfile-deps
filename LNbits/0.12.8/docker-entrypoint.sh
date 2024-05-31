@@ -18,16 +18,16 @@ fi
 if [[ -z "$LND_REST_ENDPOINT" ]]; then
    # $var is empty, do what you want
    # check for CLN
-   if [[ -z "$CORELIGHTNING_REST_URL" ]]; then
+   if [[ -z "$CORELIGHTNING_RPC" ]]; then
       # CLN also not set
       echo "no valid LN implementation configured, can't start LNBits, giving up!"
       exit 1
    else
-      /wait-for-it.sh clightning_bitcoin:3010 -- echo "CLN is up!"
-      while true;do
-        curl --fail http://clightning_bitcoin:3010/v1/getinfo && break
-        echo "clightning returned non 200 response"
-      done
+      if [[ "${$CORELIGHTNING_RPC}" ]]; then
+         echo "Waiting $CORELIGHTNING_RPC to be created..."
+         while [ ! -f "$CORELIGHTNING_RPC" ]; do sleep 1; done
+         echo "lightning-rpc created"
+      fi
    fi
 else
    /wait-for-it.sh lnd_bitcoin:8080 -- echo "LND is up!"
@@ -36,7 +36,6 @@ else
      echo "lnd returned non 200 response"
      sleep 2
    done
-
 fi
 
 exec poetry run lnbits --port 5000 --host 0.0.0.0
