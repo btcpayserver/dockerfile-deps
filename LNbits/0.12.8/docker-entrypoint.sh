@@ -25,7 +25,7 @@ if [[ -z "$LND_REST_ENDPOINT" ]]; then
    else
       if [[ "$$CORELIGHTNING_RPC" ]]; then
          echo "Waiting $CORELIGHTNING_RPC to be created..."
-         while [ ! -f "$CORELIGHTNING_RPC" ]; do sleep 1; done
+         while [ ! -S "$CORELIGHTNING_RPC" ]; do sleep 1; done
          echo "lightning-rpc created"
       fi
    fi
