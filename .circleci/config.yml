@@ -15,6 +15,24 @@ jobs:
           version: 20.10.18
 
   # publish jobs require $DOCKERHUB_USER, $DOCKERHUB_PASS defined
+  publish_buildx:
+    docker:
+      - image: cimg/base:stable
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 20.10.18
+      - run:
+          command: |
+            source ".circleci/parse-tag.sh"
+            DOCKERHUB_DOCKEFILE="$DOCKERHUB_DOCKEFILE_BUILDX"
+            DOCKERHUB_DESTINATION="$DOCKERHUB_REPO:$LATEST_TAG"
+            if [ -f $DOCKERHUB_DOCKEFILE ]; then
+                source ".circleci/push-image-buildx.sh"
+            else
+                echo "Skipping linuxamd64 because $DOCKERHUB_DOCKEFILE_BUILDX is not found"
+            fi
+
   publish_linuxamd64:
     docker:
       - image: cimg/base:stable
@@ -153,6 +171,7 @@ workflows:
             - publish_linuxamd64
             - publish_linuxarm32v7
             - publish_linuxarm64v8
+            - publish_buildx
           filters:
             branches:
               ignore: /.*/
