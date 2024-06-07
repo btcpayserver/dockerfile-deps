@@ -50,6 +50,3 @@ EXPOSE 18082
 # Switch to user monero
 USER monero
 ENV HOME /home/monero
-
-# Add HEALTHCHECK against get_info endpoint
-HEALTHCHECK --interval=5s --timeout=3s CMD curl --fail http://localhost:18081/get_info || exit 1
