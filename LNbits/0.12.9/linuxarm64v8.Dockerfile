@@ -5,7 +5,7 @@ FROM arm64v8/python:3.10-slim-bookworm
 COPY --from=qemu /usr/bin/qemu-aarch64-static /usr/bin/qemu-aarch64-static
 
 ENV REPO https://github.com/lnbits/lnbits
-ENV REPO_REF 0.12.8
+ENV REPO_REF 0.12.9
 
 RUN apt-get clean
 RUN apt-get update
