@@ -32,9 +32,12 @@ RUN poetry install --only main
 
 FROM arm64v8/python:3.10-slim-bookworm
 
+ENV REPO https://github.com/lnbits/lnbits
+ENV REPO_REF 0.12.9
+
 # needed for backups postgresql-client version 14 (pg_dump)
 RUN apt-get update && apt-get -y upgrade && \
-    apt-get -y install gnupg2 curl lsb-release && \
+    apt-get -y install gnupg2 curl git lsb-release && \
     sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list' && \
     curl -s https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - && \
     apt-get update && \
