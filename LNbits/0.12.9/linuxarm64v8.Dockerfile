@@ -1,8 +1,8 @@
-FROM debian:bookworm-slim as qemu
-RUN apt-get update && apt-get install -qq --no-install-recommends qemu-user-static
+FROM debian:bookworm-slim AS builder
+RUN apt-get update && apt-get install -qq --no-install-recommends qemu-user-static binfmt-support
 
-FROM arm64v8/python:3.10-slim-bookworm as builder
-COPY --from=qemu /usr/bin/qemu-aarch64-static /usr/bin/qemu-aarch64-static
+FROM arm64v8/python:3.10.13-slim-bookworm AS builder2
+COPY --from=builder /usr/bin/qemu-aarch64-static /usr/bin/qemu-aarch64-static
 
 ENV REPO https://github.com/lnbits/lnbits
 ENV REPO_REF 0.12.9
@@ -30,9 +30,9 @@ ENV POETRY_NO_INTERACTION=1 \
 
 RUN poetry install --only main
 
-FROM arm64v8/python:3.10-slim-bookworm
+FROM arm64v8/python:3.10.13-slim-bookworm
 
-COPY --from=qemu /usr/bin/qemu-aarch64-static /usr/bin/qemu-aarch64-static
+COPY --from=builder /usr/bin/qemu-aarch64-static /usr/bin/qemu-aarch64-static
 
 ENV REPO https://github.com/lnbits/lnbits
 ENV REPO_REF 0.12.9
@@ -59,7 +59,7 @@ WORKDIR /app
 
 RUN git clone "$REPO" . --depth=1 --branch "$REPO_REF" && git checkout "$REPO_REF"
 
-COPY --from=builder /app/.venv .venv
+COPY --from=builder2 /app/.venv .venv
 
 RUN mkdir data
 
