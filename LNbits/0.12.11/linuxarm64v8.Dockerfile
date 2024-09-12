@@ -5,7 +5,7 @@ FROM arm64v8/python:3.10.13-slim-bookworm AS builder2
 COPY --from=builder /usr/bin/qemu-aarch64-static /usr/bin/qemu-aarch64-static
 
 ENV REPO https://github.com/lnbits/lnbits
-ENV REPO_REF 0.12.11
+ENV REPO_REF v0.12.11
 
 RUN apt-get clean
 RUN apt-get update
@@ -35,7 +35,7 @@ FROM arm64v8/python:3.10.13-slim-bookworm
 COPY --from=builder /usr/bin/qemu-aarch64-static /usr/bin/qemu-aarch64-static
 
 ENV REPO https://github.com/lnbits/lnbits
-ENV REPO_REF 0.12.11
+ENV REPO_REF v0.12.11
 
 # needed for backups postgresql-client version 14 (pg_dump)
 RUN apt-get update && apt-get -y upgrade && \
