@@ -1,7 +1,7 @@
 FROM python:3.10-slim-bookworm AS builder
 
 ENV REPO https://github.com/lnbits/lnbits
-ENV REPO_REF 0.12.11
+ENV REPO_REF v0.12.11
 
 RUN apt-get clean
 RUN apt-get update
@@ -30,7 +30,7 @@ RUN poetry install --only main
 FROM python:3.10-slim-bookworm
 
 ENV REPO https://github.com/lnbits/lnbits
-ENV REPO_REF 0.12.11
+ENV REPO_REF v0.12.11
 
 # needed for backups postgresql-client version 14 (pg_dump)
 RUN apt-get update && apt-get -y upgrade && \
