@@ -12,7 +12,7 @@ jobs:
     steps: 
       - checkout
       - setup_remote_docker:
-          version: 20.10.18
+          version: 20.10.24
 
   # publish jobs require $DOCKERHUB_USER, $DOCKERHUB_PASS defined
   publish_buildx:
@@ -21,7 +21,7 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker:
-          version: 20.10.18
+          version: 20.10.24
       - run:
           command: |
             source ".circleci/parse-tag.sh"
@@ -39,7 +39,7 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker:
-          version: 20.10.18
+          version: 20.10.24
       - run:
           command: |
             source ".circleci/parse-tag.sh"
@@ -57,7 +57,7 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker:
-          version: 20.10.18
+          version: 20.10.24
       - run:
           command: |
             source ".circleci/parse-tag.sh"
@@ -82,7 +82,7 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker:
-          version: 20.10.18
+          version: 20.10.24
       - run:
           command: |
             source ".circleci/parse-tag.sh"
@@ -109,7 +109,7 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker:
-          version: 20.10.18
+          version: 20.10.24
       - run:
           command: |
             source ".circleci/parse-tag.sh"
