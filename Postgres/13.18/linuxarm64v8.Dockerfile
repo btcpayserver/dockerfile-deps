@@ -4,7 +4,7 @@ RUN set -ex \
 	&& apt-get update \
 	&& apt-get install -qq --no-install-recommends qemu-user-static binfmt-support
 
-FROM --platform=arm64 postgres:13.17
+FROM --platform=arm64 postgres:13.18
 COPY --from=downloader /usr/bin/qemu-aarch64-static /usr/bin/qemu-aarch64-static
 
 ENV PREVIOUS_VERSION 9.6
