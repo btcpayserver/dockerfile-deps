@@ -26,7 +26,7 @@ RUN set -ex \
 	&& echo "5e279972a1c7adee65e3b5661788e8706594b458b7ce318fecbd392492cc4dbd gosu" | sha256sum -c -
 
 # Making sure the builder build an arm image despite being x64
-FROM arm64v8/debian:bullseye-slim
+FROM --platform=arm64 debian:bullseye-slim
 
 COPY --from=builder "/tmp/bin" /usr/local/bin
 #EnableQEMU COPY qemu-aarch64-static /usr/bin
