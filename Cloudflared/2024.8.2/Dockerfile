@@ -29,5 +29,5 @@ COPY docker-entrypoint.sh docker-entrypoint.sh
 
 # command / entrypoint of container
 
-ENTRYPOINT [ "docker-entrypoint.sh" ]
+ENTRYPOINT [ "./docker-entrypoint.sh" ]
 CMD ["version"]
