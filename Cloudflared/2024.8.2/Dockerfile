@@ -13,21 +13,16 @@ RUN git clone --branch ${CLOUDFLARED_VERSION} --single-branch --depth 1 https://
 RUN GOOS=linux GOARCH=${TARGETARCH} make cloudflared
 
 # use a distroless base image with glibc
-FROM debian:bookworm-slim
+FROM gcr.io/distroless/base-debian11:nonroot
 
 LABEL org.opencontainers.image.source="https://github.com/cloudflare/cloudflared"
 
-RUN apt-get update && \
-    apt-get install -qq --no-install-recommends iproute2 && \
-    rm -rf /var/lib/apt/lists/*
-
 # copy our compiled binary
-COPY --from=builder /go/src/github.com/cloudflare/cloudflared/cloudflared /usr/local/bin/
+COPY --from=builder --chown=nonroot /go/src/github.com/cloudflare/cloudflared/cloudflared /usr/local/bin/
 
 # run as non-privileged user
-COPY docker-entrypoint.sh docker-entrypoint.sh
+USER nonroot
 
 # command / entrypoint of container
-
-ENTRYPOINT [ "./docker-entrypoint.sh" ]
+ENTRYPOINT ["cloudflared", "--no-autoupdate"]
 CMD ["version"]
