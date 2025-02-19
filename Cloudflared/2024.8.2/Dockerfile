@@ -22,11 +22,12 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # copy our compiled binary
-COPY --from=builder --chown=nonroot /go/src/github.com/cloudflare/cloudflared/cloudflared /usr/local/bin/
+COPY --from=builder /go/src/github.com/cloudflare/cloudflared/cloudflared /usr/local/bin/
 
 # run as non-privileged user
 COPY docker-entrypoint.sh docker-entrypoint.sh
 
 # command / entrypoint of container
-ENTRYPOINT ["cloudflared", "--no-autoupdate"]
+
+ENTRYPOINT [ "docker-entrypoint.sh" ]
 CMD ["version"]
