@@ -1,4 +1,4 @@
-FROM golang:1.23.0 as builder
+FROM --platform=$BUILDPLATFORM golang:1.23.0 AS builder
 ENV GO111MODULE=on \
     CGO_ENABLED=0 \ 
     CLOUDFLARED_VERSION=2024.8.2
@@ -8,18 +8,22 @@ WORKDIR /go/src/github.com/cloudflare/cloudflared/
 RUN git clone --branch ${CLOUDFLARED_VERSION} --single-branch --depth 1 https://github.com/cloudflare/cloudflared.git .
 
 # compile cloudflared
-RUN GOOS=linux GOARCH=arm64 make cloudflared
+RUN GOOS=linux GOARCH=${TARGETARCH} make cloudflared
 
 # use a distroless base image with glibc
-FROM --platform=arm64 gcr.io/distroless/base-debian11:nonroot
+FROM debian:bookworm-slim
 
 LABEL org.opencontainers.image.source="https://github.com/cloudflare/cloudflared"
+
+RUN apt-get update && \
+    apt-get install -qq --no-install-recommends iproute2 && \
+    rm -rf /var/lib/apt/lists/*
 
 # copy our compiled binary
 COPY --from=builder --chown=nonroot /go/src/github.com/cloudflare/cloudflared/cloudflared /usr/local/bin/
 
 # run as non-privileged user
-USER nonroot
+COPY docker-entrypoint.sh docker-entrypoint.sh
 
 # command / entrypoint of container
 ENTRYPOINT ["cloudflared", "--no-autoupdate"]
