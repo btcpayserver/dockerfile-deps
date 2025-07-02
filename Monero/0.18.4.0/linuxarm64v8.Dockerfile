@@ -6,9 +6,9 @@ RUN set -ex \
 	&& apt-get install -qq --no-install-recommends ca-certificates wget bzip2
 RUN apt-get install -qq --no-install-recommends qemu-user-static binfmt-support
 
-ENV MONERO_VERSION 0.18.4.0
-ENV FILE monero-linux-armv8-v${MONERO_VERSION}.tar.bz2
-ENV FILE_CHECKSUM f252b6a24e801535bf36fbaaa7b2d6ae44b1efc5d427803d483e3c3a17d6f2cd
+ENV MONERO_VERSION=0.18.4.0
+ENV FILE=monero-linux-armv8-v${MONERO_VERSION}.tar.bz2
+ENV FILE_CHECKSUM=f252b6a24e801535bf36fbaaa7b2d6ae44b1efc5d427803d483e3c3a17d6f2cd
 
 # Download and verify Monero binaries
 RUN set -ex \
@@ -22,13 +22,13 @@ RUN set -ex \
 # Making sure the final image is ARM64 despite being built on x64
 FROM --platform=arm64 debian:bookworm-slim
 
-# Install runtime dependencies
 RUN apt-get update \
-    && apt-get install -qq --no-install-recommends ca-certificates curl \
-    && apt-get clean \
-    && apt-get autoclean \
-    && apt-get autoremove \
-    && rm -rf /var/lib/apt/lists/*
+	&& apt-get upgrade -y \
+	&& apt-get install -qq --no-install-recommends ca-certificates curl \
+	&& apt-get clean \
+	&& apt-get autoclean \
+	&& apt-get autoremove \
+	&& rm -rf /var/lib/apt/lists/*
 
 COPY --from=builder "/tmp/bin" /usr/local/bin
 COPY --from=builder /usr/bin/qemu-aarch64-static /usr/bin/qemu-aarch64-static
@@ -54,4 +54,4 @@ EXPOSE 18081
 EXPOSE 18082
 # Switch to user monero
 USER monero
-ENV HOME /home/monero
+ENV HOME=/home/monero

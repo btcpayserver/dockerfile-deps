@@ -24,6 +24,7 @@ FROM --platform=arm debian:bookworm-slim
 
 # Install runtime dependencies
 RUN apt-get update \
+    && apt-get upgrade -y \
     && apt-get install -qq --no-install-recommends ca-certificates curl \
     && apt-get clean \
     && apt-get autoclean \
