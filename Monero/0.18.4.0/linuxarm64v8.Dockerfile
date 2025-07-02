@@ -17,11 +17,12 @@ RUN set -ex \
 	&& echo "${FILE_CHECKSUM} ${FILE}" | sha256sum -c - \
 	&& mkdir bin \
 	&& tar -jxf ${FILE} -C bin --strip-components=1 \
-	&& find bin/ -type f -executable -exec chmod +x {} \;
+	&& find bin/ -type f -executable -exec chmod a+x {} \;
 
 # Making sure the final image is ARM64 despite being built on x64
 FROM --platform=arm64 debian:bookworm-slim
 
+# Install runtime dependencies
 RUN apt-get update \
 	&& apt-get upgrade -y \
 	&& apt-get install -qq --no-install-recommends ca-certificates curl \
@@ -52,6 +53,7 @@ VOLUME /wallet
 EXPOSE 18080
 EXPOSE 18081
 EXPOSE 18082
+
 # Switch to user monero
 USER monero
 ENV HOME=/home/monero

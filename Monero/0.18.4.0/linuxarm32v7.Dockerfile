@@ -17,7 +17,7 @@ RUN set -ex \
 	&& echo "${FILE_CHECKSUM} ${FILE}" | sha256sum -c - \
 	&& mkdir bin \
 	&& tar -jxf ${FILE} -C bin --strip-components=1 \
-	&& find bin/ -type f -executable -exec chmod +x {} \;
+	&& find bin/ -type f -executable -exec chmod a+x {} \;
 
 # Making sure the final image is ARM32 despite being built on x64
 FROM --platform=arm debian:bookworm-slim
