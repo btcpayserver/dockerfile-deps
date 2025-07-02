@@ -49,4 +49,4 @@ EXPOSE 18082
 
 # Switch to user monero
 USER monero
-ENV HOME /home/monero
+ENV HOME=/home/monero
