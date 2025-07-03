@@ -22,6 +22,9 @@ RUN set -ex \
 # Making sure the final image is ARM32 despite being built on x64
 FROM --platform=arm debian:bookworm-slim
 
+COPY --from=builder "/tmp/bin" /usr/local/bin
+COPY --from=builder /usr/bin/qemu-arm-static /usr/bin/qemu-arm-static
+
 # Install runtime dependencies
 RUN apt-get update \
     && apt-get upgrade -y \
@@ -30,9 +33,6 @@ RUN apt-get update \
     && apt-get autoclean \
     && apt-get autoremove \
     && rm -rf /var/lib/apt/lists/*
-
-COPY --from=builder "/tmp/bin" /usr/local/bin
-COPY --from=builder /usr/bin/qemu-arm-static /usr/bin/qemu-arm-static
 
 # Copy notifier script
 COPY ./scripts /scripts/
