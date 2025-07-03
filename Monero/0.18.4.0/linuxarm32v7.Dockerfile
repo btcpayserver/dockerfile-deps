@@ -1,31 +1,38 @@
-# Explicitly specify arm32v7 base image
-FROM arm32v7/debian:bullseye-slim
-#EnableQEMU COPY qemu-arm-static /usr/bin
-# Set necessary environment variables for the current Monero version and hash
-ENV FILE=monero-linux-armv7-v0.18.4.0.tar.bz2
+# Use manifest image which supports all architectures
+FROM debian:bookworm-slim AS builder
+
+RUN set -ex \
+	&& apt-get update \
+	&& apt-get install -qq --no-install-recommends ca-certificates wget bzip2
+RUN apt-get install -qq --no-install-recommends qemu-user-static binfmt-support
+
+ENV MONERO_VERSION=0.18.4.0
+ENV FILE=monero-linux-armv7-v${MONERO_VERSION}.tar.bz2
 ENV FILE_CHECKSUM=b35b5e8d27d799cea6cf3ff539a672125292784739db41181b92a9c73e1c325b
 
-# Set SHELL options per https://github.com/hadolint/hadolint/wiki/DL4006
-SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+# Download and verify Monero binaries
+RUN set -ex \
+	&& cd /tmp \
+	&& wget -qO ${FILE} https://downloads.getmonero.org/cli/${FILE} \
+	&& echo "${FILE_CHECKSUM} ${FILE}" | sha256sum -c - \
+	&& mkdir bin \
+	&& tar -jxf ${FILE} -C bin --strip-components=1 \
+	&& find bin/ -type f -executable -exec chmod a+x {} \;
 
-# Install dependencies
+# Making sure the final image is ARM32 despite being built on x64
+FROM --platform=arm debian:bookworm-slim
+
+# Install runtime dependencies
 RUN apt-get update \
     && apt-get upgrade -y \
-    && apt-get -y --no-install-recommends install bzip2 ca-certificates wget curl \
-    && apt-get -y autoremove \
-    && apt-get clean autoclean \
+    && apt-get install -qq --no-install-recommends ca-certificates curl \
+    && apt-get clean \
+    && apt-get autoclean \
+    && apt-get autoremove \
     && rm -rf /var/lib/apt/lists/*
 
-# Download specified Monero tar.gz and verify downloaded binary against hardcoded checksum
-RUN wget -qO $FILE https://downloads.getmonero.org/cli/$FILE && \
-    echo "$FILE_CHECKSUM $FILE" | sha256sum -c - 
-
-# Extract and set permissions on Monero binaries
-RUN mkdir -p extracted && \
-    tar -jxvf $FILE -C /extracted && \
-    find /extracted/ -type f -print0 | xargs -0 chmod a+x && \
-    find /extracted/ -type f -print0 | xargs -0 mv -t /usr/local/bin/ && \
-    rm -rf extracted && rm $FILE
+COPY --from=builder "/tmp/bin" /usr/local/bin
+COPY --from=builder /usr/bin/qemu-arm-static /usr/bin/qemu-arm-static
 
 # Copy notifier script
 COPY ./scripts /scripts/
@@ -49,4 +56,4 @@ EXPOSE 18082
 
 # Switch to user monero
 USER monero
-ENV HOME /home/monero
+ENV HOME=/home/monero
