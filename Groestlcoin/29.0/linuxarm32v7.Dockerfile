@@ -23,7 +23,7 @@ RUN set -ex \
 	&& echo "1b670d5426e1ddbb14a14280afb6850a48c219189d4cfe7e6eb2cc08a4fc7785 gosu" | sha256sum -c -
 
 # Making sure the builder build an arm image despite being x64
-FROM arm32v7/debian:bookworm-slim
+FROM --platform=arm debian:bookworm-slim
 
 COPY --from=builder "/tmp/bin" /usr/local/bin
 COPY --from=builder /usr/bin/qemu-arm-static /usr/bin/qemu-arm-static
