@@ -18,12 +18,12 @@ RUN set -ex \
         "linux/arm64") \
             ARCH="armv8" \
             FILE_CHECKSUM="948379e60e1b65e36bdfcc20481f2e381c49be057deb9fb5a2d030100f14d1e1" \
-            TAR_PATH="monero-arm-linux-gnueabihf-v${MONERO_VERSION}/" \
+            TAR_PATH="monero-aarch64-linux-gnu-v${MONERO_VERSION}/" \
             ;; \
         "linux/arm/v7") \
             ARCH="armv7" \
             FILE_CHECKSUM="a080b9f703c9b09cb3713376d7679cda089e6772794bd0bfa994cb256b6f3535" \
-            TAR_PATH="monero-aarch64-linux-gnu-v${MONERO_VERSION}/" \
+            TAR_PATH="monero-arm-linux-gnueabihf-v${MONERO_VERSION}/" \
             ;; \
         *) \
             echo "Unsupported architecture: ${TARGETPLATFORM}" \
