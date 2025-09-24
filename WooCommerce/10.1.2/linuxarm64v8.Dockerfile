@@ -1,4 +1,4 @@
-FROM wordpress:6.8.2-php8.3
+FROM --platform=linux/arm64 wordpress:6.8.2-php8.3
 
 ENV WOOCOMMERCE_VERSION 10.1.2
 ENV BTCPAY_PLUGIN_VERSION 2.7.2
