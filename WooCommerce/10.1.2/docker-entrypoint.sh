@@ -251,9 +251,11 @@ $stderr = fopen('php://stderr', 'w');
 //   "hostname:port"
 // https://codex.wordpress.org/Editing_wp-config.php#MySQL_Sockets_or_Pipes
 //   "hostname:unix-socket-path"
-list($host, $socket) = explode(':', getenv('WORDPRESS_DB_HOST'), 2);
+$hostParts = explode(':', getenv('WORDPRESS_DB_HOST'), 2);
+$host = $hostParts[0];
+$socket = isset($hostParts[1]) ? $hostParts[1] : null;
 $port = 0;
-if (is_numeric($socket)) {
+if ($socket && is_numeric($socket)) {
 	$port = (int) $socket;
 	$socket = null;
 }
@@ -261,13 +263,22 @@ $user = getenv('WORDPRESS_DB_USER');
 $pass = getenv('WORDPRESS_DB_PASSWORD');
 $dbName = getenv('WORDPRESS_DB_NAME');
 
+fwrite($stderr, "Attempting to connect to database:\n");
+fwrite($stderr, "  Host: $host\n");
+fwrite($stderr, "  Port: $port\n");
+fwrite($stderr, "  Socket: " . ($socket ?: 'null') . "\n");
+fwrite($stderr, "  User: $user\n");
+fwrite($stderr, "  Database: $dbName\n");
+
 $maxTries = 10;
 do {
 	$mysql = new mysqli($host, $user, $pass, '', $port, $socket);
 	if ($mysql->connect_error) {
 		fwrite($stderr, "\n" . 'MySQL Connection Error: (' . $mysql->connect_errno . ') ' . $mysql->connect_error . "\n");
+		fwrite($stderr, "Retrying in 3 seconds... (attempts remaining: " . ($maxTries - 1) . ")\n");
 		--$maxTries;
 		if ($maxTries <= 0) {
+			fwrite($stderr, "Failed to connect to database after 10 attempts. Exiting.\n");
 			exit(1);
 		}
 		sleep(3);
