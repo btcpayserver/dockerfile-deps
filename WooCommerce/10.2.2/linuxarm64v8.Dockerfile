@@ -1,7 +1,7 @@
-FROM --platform=linux/arm64 wordpress:6.0.2-php8.0
+FROM --platform=linux/arm64 wordpress:6.8.3-php8.3
 
-ENV WOOCOMMERCE_VERSION 6.9.4
-ENV BTCPAY_PLUGIN_VERSION 1.1.1
+ENV WOOCOMMERCE_VERSION 10.2.2
+ENV BTCPAY_PLUGIN_VERSION 2.7.2
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends unzip wget \
