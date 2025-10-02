@@ -72,6 +72,7 @@ jobs:
                 sudo cp /usr/bin/qemu-aarch64-static "$(dirname "$DOCKERHUB_DOCKEFILE")/qemu-aarch64-static"
                 sed -i -e 's/#EnableQEMU //g' "$DOCKERHUB_DOCKEFILE"
                 #
+                export DOCKER_BUILD_PLATFORM="--platform=linux/arm64"
                 source ".circleci/push-image.sh"
             else
                 echo "Skipping linuxarm64v8 because $DOCKERHUB_DOCKEFILE is not found"
@@ -99,6 +100,7 @@ jobs:
                     sed -i -e 's/#EnableQEMU //g' "$DOCKERHUB_DOCKEFILE"
                 fi
                 #
+                export DOCKER_BUILD_PLATFORM="--platform=linux/arm/v7"
                 source ".circleci/push-image.sh"
             else
                 echo "Skipping linuxarm32v7 because $DOCKERHUB_DOCKEFILE is not found"
