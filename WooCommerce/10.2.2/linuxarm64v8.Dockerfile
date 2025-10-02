@@ -1,4 +1,5 @@
-FROM --platform=linux/arm64 wordpress:6.8.3-php8.3
+FROM arm64v8/wordpress:6.8.3-php8.3
+#EnableQEMU COPY qemu-aarch64-static /usr/bin
 
 ENV WOOCOMMERCE_VERSION 10.2.2
 ENV BTCPAY_PLUGIN_VERSION 2.7.2
