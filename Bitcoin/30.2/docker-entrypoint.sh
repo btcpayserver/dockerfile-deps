@@ -36,7 +36,7 @@ if [[ "$1" == "bitcoin-cli" || "$1" == "bitcoin-tx" || "$1" == "bitcoind" || "$1
 		: "${CREATE_WALLET:=true}"
 		if ! [[ -f "${WALLETFILE}" ]] && [[ "${CREATE_WALLET}" != "false" ]]; then
 		  echo "The wallet does not exists, creating it at ${WALLETDIR}..."
-		  gosu bitcoin bitcoin-wallet "-datadir=${WALLETDIR}" "-wallet=" create
+		  gosu bitcoin bitcoin-wallet "-${BITCOIN_NETWORK}" "-datadir=${WALLETDIR}" "-wallet=" create
 		elif ! is_sqlite "${WALLETFILE}"; then
 			need_migrate=true
 			echo "Legacy wallet migration needed"
