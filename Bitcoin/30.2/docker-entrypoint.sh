@@ -34,12 +34,14 @@ if [[ "$1" == "bitcoin-cli" || "$1" == "bitcoin-tx" || "$1" == "bitcoind" || "$1
 		chown -R bitcoin:bitcoin "$WALLETDIR"
 		CONFIG_PREFIX="${CONFIG_PREFIX}${NL}walletdir=${WALLETDIR}${NL}"
 		: "${CREATE_WALLET:=true}"
-		if ! [[ -f "${WALLETFILE}" ]] && [[ "${CREATE_WALLET}" != "false" ]]; then
-		  echo "The wallet does not exists, creating it at ${WALLETDIR}..."
-		  gosu bitcoin bitcoin-wallet "-${BITCOIN_NETWORK}" "-datadir=${WALLETDIR}" "-wallet=" create
-		elif ! is_sqlite "${WALLETFILE}"; then
-			need_migrate=true
-			echo "Legacy wallet migration needed"
+		if [[ "${CREATE_WALLET}" != "false" ]]; then
+			if ! [[ -f "${WALLETFILE}" ]]; then
+				echo "The wallet does not exists, creating it at ${WALLETDIR}..."
+				gosu bitcoin bitcoin-wallet "-${BITCOIN_NETWORK}" "-datadir=${WALLETDIR}" "-wallet=" create
+			elif ! is_sqlite "${WALLETFILE}"; then
+				need_migrate=true
+				echo "Legacy wallet migration needed"
+			fi
 		fi
 	fi
 
