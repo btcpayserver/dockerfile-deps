@@ -1,6 +1,13 @@
 #!/bin/bash
 set -e
 
+is_sqlite()
+{
+	local f=$1
+	# read first 16 bytes and compare to the SQLite header
+	printf 'SQLite format 3\0' | cmp -n 16 -s - "$f"
+}
+
 if [[ "$1" == "bitcoin-cli" || "$1" == "bitcoin-tx" || "$1" == "bitcoind" || "$1" == "test_bitcoin" ]]; then
 	mkdir -p "$BITCOIN_DATA"
 
@@ -18,6 +25,7 @@ if [[ "$1" == "bitcoin-cli" || "$1" == "bitcoin-tx" || "$1" == "bitcoind" || "$1
 		CONFIG_PREFIX=$'mainnet=1\n[main]'
 	fi
 
+	need_migrate=false
 	if [[ "$BITCOIN_WALLETDIR" ]] && [[ "$BITCOIN_NETWORK" ]]; then
 		NL=$'\n'
 		WALLETDIR="$BITCOIN_WALLETDIR/${BITCOIN_NETWORK}"
@@ -28,7 +36,10 @@ if [[ "$1" == "bitcoin-cli" || "$1" == "bitcoin-tx" || "$1" == "bitcoind" || "$1
 		: "${CREATE_WALLET:=true}"
 		if ! [[ -f "${WALLETFILE}" ]] && [[ "${CREATE_WALLET}" != "false" ]]; then
 		  echo "The wallet does not exists, creating it at ${WALLETDIR}..."
-		  gosu bitcoin bitcoin-wallet "-datadir=${WALLETDIR}" "-legacy" "-wallet=" create
+		  gosu bitcoin bitcoin-wallet "-datadir=${WALLETDIR}" "-wallet=" create
+		elif ! is_sqlite "${WALLETFILE}"; then
+			need_migrate=true
+			echo "Legacy wallet migration needed"
 		fi
 	fi
 
@@ -61,18 +72,14 @@ if [[ "$1" == "bitcoin-cli" || "$1" == "bitcoin-tx" || "$1" == "bitcoind" || "$1
 	chown -h bitcoin:bitcoin /home/bitcoin/.bitcoin
 	rm -f /home/bitcoin/.bitcoin/settings.json
 
-	# peers_dat is routinely corrupted, preventing bitcoind to start, see https://github.com/bitcoin/bitcoin/issues/26599
-	# This should be fixed in 24.1, but doesn't hurt to keep it
-	peers_dat="/home/bitcoin/.bitcoin/peers.dat"
-	peers_dat_corrupted="/home/bitcoin/.bitcoin/peers_corrupted.dat"
-	if [[ -f "${peers_dat}" ]]; then
-		actual_hash=$(head -c -32 "${peers_dat}" | sha256sum | cut -c1-64 | xxd -r -p | sha256sum | cut -c1-64)
-		expected_hash=$(tail -c 32 "${peers_dat}" | xxd -ps -c 32)
-		if [[ "${actual_hash}" != "${expected_hash}" ]]; then
-			echo "${peers_dat} is corrupted, moving it to ${peers_dat_corrupted}"
-			rm -f "${peers_dat_corrupted}"
-			mv "${peers_dat}" "${peers_dat_corrupted}"
-		fi
+	if [[ "${need_migrate}" == "true" ]]; then
+		echo "Migrating legacy bitcoin wallet..."
+		gosu bitcoin "$@" &
+		BITCOIN_PID=$!
+		gosu bitcoin bitcoin-cli -datadir="${BITCOIN_DATA}" -rpcwait migratewallet ""
+		gosu bitcoin bitcoin-cli -datadir="${BITCOIN_DATA}" -rpcwait stop
+		wait "${BITCOIN_PID}"
+		echo "Bitcoin legacy wallet migrated."
 	fi
 
 	exec gosu bitcoin "$@"
