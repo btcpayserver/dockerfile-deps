@@ -17,12 +17,12 @@ if [[ "$1" == "bitcoin-cli" || "$1" == "bitcoin-tx" || "$1" == "bitcoind" || "$1
 	elif [[ "${BITCOIN_NETWORK}" == "testnet" ]]; then
 		CONFIG_PREFIX=$'testnet=1\n[test]'
 	elif [[ "${BITCOIN_NETWORK}" == "mainnet" ]]; then
-		CONFIG_PREFIX=$'mainnet=1\n[main]'
+		CONFIG_PREFIX=$'[main]'
 	elif [[ "${BITCOIN_NETWORK}" == "signet" ]]; then
 		CONFIG_PREFIX=$'signet=1\n[signet]'
 	else 
 		BITCOIN_NETWORK="mainnet"
-		CONFIG_PREFIX=$'mainnet=1\n[main]'
+		CONFIG_PREFIX=$'[main]'
 	fi
 
 	need_migrate=false
