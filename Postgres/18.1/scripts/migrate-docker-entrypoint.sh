@@ -87,13 +87,22 @@ if [[ "$CURRENT_PGVERSION" != "$EXPECTED_PGVERSION" ]] && \
          gosu postgres pg_checksums --check -D "$PGDATAOLD" &> /dev/null || gosu postgres pg_checksums --disable --pgdata "$PGDATANEW"
 	fi
 
+    rm -rf "$PGDATANEW/pg_upgrade_output.d"
     if ! gosu postgres pg_upgrade --link; then
-        echo "Failed to upgrade the server, showing pg_upgrade_server.log"
-        cat pg_upgrade_server.log
-        cp *.log "$PGMOUNT/"
+        echo "Failed to upgrade the server"
+        find "$PGDATANEW/pg_upgrade_output.d" -type f -name 'pg_upgrade_server.log' -exec cp -t "$PGMOUNT" {} +
+        cat "$PGMOUNT/pg_upgrade_server.log"
         if [ -f "$PGDATAOLD/PG_VERSION" ] && [ -f "$PGDATANEW/PG_VERSION" ]; then
             echo "Cleaning up the new cluster"
             rm -r $PGDATANEW/*
+        fi
+
+        if grep -Fq 'must be superuser to connect in binary upgrade mode' "$PGMOUNT/pg_upgrade_server.log"; then
+            echo "Attempt to add SUPERUSER role to postgres user..."
+            gosu postgres "$PGBINOLD/postgres" --single -D "$PGDATAOLD" postgres <<'SQL'
+            ALTER ROLE postgres WITH SUPERUSER;
+SQL
+            exit 1
         fi
 
         # If the db hasn't started cleanly, this may solve it.
