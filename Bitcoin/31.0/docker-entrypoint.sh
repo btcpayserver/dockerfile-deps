@@ -70,6 +70,29 @@ if [[ "$1" == "bitcoin-cli" || "$1" == "bitcoin-tx" || "$1" == "bitcoind" || "$1
 					;;
 				esac
 				gosu bitcoin bitcoin-wallet ${NETWORK_FLAG} "-datadir=${NETWORK_WALLETDIR}" "-wallet=${WALLET_NAME}" create
+
+				# This stupid utility is creating the file somewhere depending on the network flag...
+				case "${BITCOIN_NETWORK}" in
+				mainnet)
+					;;
+				testnet)
+					mv "${NETWORK_WALLETDIR}/testnet3/default" "${NETWORK_WALLETDIR}/default"
+					rm -rf "${NETWORK_WALLETDIR}/testnet3"
+					;;
+				signet)
+					mv "${NETWORK_WALLETDIR}/signet/default" "${NETWORK_WALLETDIR}/default"
+					rm -rf "${NETWORK_WALLETDIR}/signet"
+					;;
+				regtest)
+					mv "${NETWORK_WALLETDIR}/regtest/default" "${NETWORK_WALLETDIR}/default"
+					rm -rf "${NETWORK_WALLETDIR}/regtest"
+					;;
+				*)
+					echo "Unknown BITCOIN_NETWORK: ${BITCOIN_NETWORK}" >&2
+					exit 1
+					;;
+				esac
+
 			elif ! is_sqlite "${WALLETFILE}"; then
 				need_migrate=true
 				echo "Legacy wallet migration needed"
