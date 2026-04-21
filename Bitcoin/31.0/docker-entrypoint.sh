@@ -28,16 +28,48 @@ if [[ "$1" == "bitcoin-cli" || "$1" == "bitcoin-tx" || "$1" == "bitcoind" || "$1
 	need_migrate=false
 	if [[ "$BITCOIN_WALLETDIR" ]] && [[ "$BITCOIN_NETWORK" ]]; then
 		NL=$'\n'
-		WALLETDIR="$BITCOIN_WALLETDIR/${BITCOIN_NETWORK}"
+		WALLET_NAME="default"
+		NETWORK_WALLETDIR="${BITCOIN_WALLETDIR}/${BITCOIN_NETWORK}"
+		WALLETDIR="${NETWORK_WALLETDIR}/${WALLET_NAME}"
 		WALLETFILE="${WALLETDIR}/wallet.dat"
-		mkdir -p "$WALLETDIR"
-		chown -R bitcoin:bitcoin "$WALLETDIR"
-		CONFIG_PREFIX="${CONFIG_PREFIX}${NL}walletdir=${WALLETDIR}${NL}"
+		LEGACY_WALLETDIR="${NETWORK_WALLETDIR}"
+		LEGACY_WALLETFILE="${LEGACY_WALLETDIR}/wallet.dat"
+		mkdir -p "${NETWORK_WALLETDIR}"
+		chown -R bitcoin:bitcoin "${NETWORK_WALLETDIR}"
+		CONFIG_PREFIX="${CONFIG_PREFIX}${NL}walletdir=${NETWORK_WALLETDIR}${NL}"
 		: "${CREATE_WALLET:=true}"
+
 		if [[ "${CREATE_WALLET}" != "false" ]]; then
+			CONFIG_PREFIX="${CONFIG_PREFIX}${NL}wallet=${WALLET_NAME}${NL}"
+			if [[ -f "${LEGACY_WALLETFILE}" ]] && ! [[ -f "${WALLETFILE}" ]]; then
+				mkdir -p "${WALLETDIR}"
+				chown -R bitcoin:bitcoin "${WALLETDIR}"
+				mv "${LEGACY_WALLETFILE}" "${WALLETFILE}"
+				[[ -f "${LEGACY_WALLETDIR}/db.log" ]] && mv "${LEGACY_WALLETDIR}/db.log" "${WALLETDIR}/db.log"
+				[[ -f "${LEGACY_WALLETDIR}/database" ]] && mv "${LEGACY_WALLETDIR}/database" "${WALLETDIR}/database"
+				echo "Moved ${LEGACY_WALLETFILE} -> ${WALLETFILE}"
+			fi
 			if ! [[ -f "${WALLETFILE}" ]]; then
-				echo "The wallet does not exists, creating it at ${WALLETDIR}..."
-				gosu bitcoin bitcoin-wallet "-${BITCOIN_NETWORK}" "-datadir=${WALLETDIR}" "-wallet=" create
+				echo "The wallet does not exists, creating it at ${NETWORK_WALLETDIR}..."
+				case "${BITCOIN_NETWORK}" in
+				mainnet)
+					NETWORK_FLAG=""
+					;;
+				testnet)
+					NETWORK_FLAG="-testnet"
+					;;
+				signet)
+					NETWORK_FLAG="-signet"
+					;;
+				regtest)
+					NETWORK_FLAG="-regtest"
+					;;
+				*)
+					echo "Unknown BITCOIN_NETWORK: ${BITCOIN_NETWORK}" >&2
+					exit 1
+					;;
+				esac
+				gosu bitcoin bitcoin-wallet ${NETWORK_FLAG} "-datadir=${NETWORK_WALLETDIR}" "-wallet=${WALLET_NAME}" create
 			elif ! is_sqlite "${WALLETFILE}"; then
 				need_migrate=true
 				echo "Legacy wallet migration needed"
@@ -78,7 +110,7 @@ if [[ "$1" == "bitcoin-cli" || "$1" == "bitcoin-tx" || "$1" == "bitcoind" || "$1
 		echo "Migrating legacy bitcoin wallet..."
 		gosu bitcoin "$@" &
 		BITCOIN_PID=$!
-		gosu bitcoin bitcoin-cli -datadir="${BITCOIN_DATA}" -rpcwait migratewallet ""
+		gosu bitcoin bitcoin-cli -datadir="${BITCOIN_DATA}" -rpcwait migratewallet "${WALLET_NAME}"
 		gosu bitcoin bitcoin-cli -datadir="${BITCOIN_DATA}" -rpcwait stop
 		wait "${BITCOIN_PID}"
 		echo "Bitcoin legacy wallet migrated."
