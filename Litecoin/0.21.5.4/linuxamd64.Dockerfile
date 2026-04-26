@@ -8,7 +8,7 @@ RUN set -ex \
 	&& rm -rf /var/lib/apt/lists/*
 
 ENV LITECOIN_VERSION 0.21.5.4
-ENV LITECOIN_URL https://download.litecoin.org/litecoin-${LITECOIN_VERSION}/linux/litecoin-${LITECOIN_VERSION}-x86_64-linux-gnu.tar.gz
+ENV LITECOIN_URL https://download.litecoin.org/litecoin-${LITECOIN_VERSION}/litecoin-${LITECOIN_VERSION}-x86_64-linux-gnu.tar.gz
 ENV LITECOIN_SHA256 91621306bafcadeebc266c264c95576536b5b2658e0ba03b05262ed4b9ab611f
 
 # install litecoin binaries

@@ -6,7 +6,7 @@ RUN set -ex \
 	&& apt-get install -qq --no-install-recommends ca-certificates dirmngr gosu wget qemu-user-static binfmt-support
 
 ENV LITECOIN_VERSION 0.21.5.4
-ENV LITECOIN_URL https://download.litecoin.org/litecoin-${LITECOIN_VERSION}/linux/litecoin-${LITECOIN_VERSION}-aarch64-linux-gnu.tar.gz
+ENV LITECOIN_URL https://download.litecoin.org/litecoin-${LITECOIN_VERSION}/litecoin-${LITECOIN_VERSION}-aarch64-linux-gnu.tar.gz
 ENV LITECOIN_SHA256 f0213853817d0ba7854aa718dc43bf991aba80a7db8b47969ae979dc083acce2
 
 # install litecoin binaries
