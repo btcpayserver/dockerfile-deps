@@ -1,9 +1,10 @@
 # Use manifest image which support all architecture
-FROM debian:bullseye-slim as builder
+FROM debian:bookworm-slim as builder
 
 RUN set -ex \
 	&& apt-get update \
 	&& apt-get install -qq --no-install-recommends ca-certificates dirmngr gosu wget
+RUN apt-get install -qq --no-install-recommends qemu-user-static binfmt-support
 
 ENV ELEMENTS_VERSION 23.3.3
 ENV ELEMENTS_URL https://github.com/ElementsProject/elements/releases/download/elements-23.3.3/elements-23.3.3-aarch64-linux-gnu.tar.gz
@@ -21,10 +22,10 @@ RUN set -ex \
 	&& echo "c3805a85d17f4454c23d7059bcb97e1ec1af272b90126e79ed002342de08389b gosu" | sha256sum -c -
 
 # Making sure the builder build an arm image despite being x64
-FROM arm64v8/debian:bullseye-slim
+FROM --platform=arm64 debian:bookworm-slim
 
 COPY --from=builder "/tmp/bin" /usr/local/bin
-#EnableQEMU COPY qemu-aarch64-static /usr/bin
+COPY --from=builder /usr/bin/qemu-aarch64-static /usr/bin/qemu-aarch64-static
 
 RUN chmod +x /usr/local/bin/gosu && groupadd -r elements && useradd -r -m -g elements elements
 

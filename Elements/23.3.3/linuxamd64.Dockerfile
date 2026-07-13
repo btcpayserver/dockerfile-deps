@@ -1,4 +1,4 @@
-FROM debian:bullseye-slim as builder
+FROM debian:bookworm-slim as builder
 
 RUN set -ex \
 	&& apt-get update \
@@ -19,7 +19,7 @@ RUN set -ex \
 	&& wget -qO gosu "https://github.com/tianon/gosu/releases/download/1.17/gosu-amd64" \
 	&& echo "bbc4136d03ab138b1ad66fa4fc051bafc6cc7ffae632b069a53657279a450de3 gosu" | sha256sum -c -
 
-FROM debian:bullseye-slim
+FROM debian:bookworm-slim
 COPY --from=builder "/tmp/bin" /usr/local/bin
 
 RUN chmod +x /usr/local/bin/gosu && groupadd -r elements && useradd -r -m -g elements elements
