@@ -11,7 +11,7 @@
 # DOCKERHUB_DOCKEFILE_ARM32: Bitcoin/0.17.0/linuxarm32v7.Dockerfile
 # DOCKERHUB_DOCKEFILE_AMD64: Bitcoin/0.17.0/linuxamd64.Dockerfile
 
-CI_TAG="${GITHUB_REF_NAME:-${CIRCLE_TAG:-}}"
+CI_TAG="${CI_TAG:-${GITHUB_REF_NAME:-${CIRCLE_TAG:-}}}"
 
 SEPARATOR=$(expr index "$CI_TAG" "/")
 NODE_NAME=${CI_TAG:0:$SEPARATOR-1}

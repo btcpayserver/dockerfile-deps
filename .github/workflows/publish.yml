@@ -4,12 +4,17 @@ on:
   push:
     tags:
       - '*/*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Image tag in Project/version format
+        required: true
+        type: string
 
 env:
   DOCKER_HOST: unix:///var/run/docker.sock
   DOCKER_CLI_EXPERIMENTAL: enabled
-  DOCKERHUB_USER: ${{ secrets.DOCKERHUB_USER }}
-  DOCKERHUB_PASS: ${{ secrets.DOCKERHUB_PASS }}
+  CI_TAG: ${{ inputs.tag || github.ref_name }}
 
 jobs:
   publish_linuxamd64:
@@ -18,7 +23,28 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Build image
+        if: github.event_name == 'workflow_dispatch'
+        shell: bash
+        run: |
+          source ".github/scripts/parse-tag.sh"
+          DOCKER_ARGS=()
+          if [ -n "$DOCKER_OPTIONS" ]; then
+              DOCKER_ARGS=("$DOCKER_OPTIONS")
+          fi
+          DOCKERHUB_DOCKEFILE="$DOCKERHUB_DOCKEFILE_AMD64"
+          DOCKERHUB_DESTINATION="$DOCKERHUB_REPO:$LATEST_TAG-amd64"
+          if [ -f "$DOCKERHUB_DOCKEFILE" ]; then
+              sudo docker "${DOCKER_ARGS[@]}" build --pull -t "$DOCKERHUB_DESTINATION" -f "$DOCKERHUB_DOCKEFILE" "$NODE_NAME/$NODE_VERSION"
+          else
+              echo "Skipping linuxamd64 because $DOCKERHUB_DOCKEFILE is not found"
+          fi
+
       - name: Publish image
+        if: github.event_name == 'push'
+        env:
+          DOCKERHUB_USER: ${{ secrets.DOCKERHUB_USER }}
+          DOCKERHUB_PASS: ${{ secrets.DOCKERHUB_PASS }}
         shell: bash
         run: |
           source ".github/scripts/parse-tag.sh"
@@ -36,7 +62,35 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Build image
+        if: github.event_name == 'workflow_dispatch'
+        shell: bash
+        run: |
+          source ".github/scripts/parse-tag.sh"
+          DOCKER_ARGS=()
+          if [ -n "$DOCKER_OPTIONS" ]; then
+              DOCKER_ARGS=("$DOCKER_OPTIONS")
+          fi
+          DOCKERHUB_DOCKEFILE="$DOCKERHUB_DOCKEFILE_ARM32"
+          DOCKERHUB_DESTINATION="$DOCKERHUB_REPO:$LATEST_TAG-arm32v7"
+          if [ -f "$DOCKERHUB_DOCKEFILE" ]; then
+              sudo docker "${DOCKER_ARGS[@]}" run --rm --privileged multiarch/qemu-user-static:register --reset
+              if grep "#EnableQEMU" "$DOCKERHUB_DOCKEFILE"; then
+                  sudo apt update
+                  sudo apt install -y qemu-user-static qemu-user binfmt-support
+                  sudo cp /usr/bin/qemu-arm-static "$(dirname "$DOCKERHUB_DOCKEFILE")/qemu-arm-static"
+                  sed -i -e 's/#EnableQEMU //g' "$DOCKERHUB_DOCKEFILE"
+              fi
+              sudo docker "${DOCKER_ARGS[@]}" build --pull -t "$DOCKERHUB_DESTINATION" -f "$DOCKERHUB_DOCKEFILE" "$NODE_NAME/$NODE_VERSION"
+          else
+              echo "Skipping linuxarm32v7 because $DOCKERHUB_DOCKEFILE is not found"
+          fi
+
       - name: Publish image
+        if: github.event_name == 'push'
+        env:
+          DOCKERHUB_USER: ${{ secrets.DOCKERHUB_USER }}
+          DOCKERHUB_PASS: ${{ secrets.DOCKERHUB_PASS }}
         shell: bash
         run: |
           source ".github/scripts/parse-tag.sh"
@@ -65,7 +119,33 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Build image
+        if: github.event_name == 'workflow_dispatch'
+        shell: bash
+        run: |
+          source ".github/scripts/parse-tag.sh"
+          DOCKER_ARGS=()
+          if [ -n "$DOCKER_OPTIONS" ]; then
+              DOCKER_ARGS=("$DOCKER_OPTIONS")
+          fi
+          DOCKERHUB_DOCKEFILE="$DOCKERHUB_DOCKEFILE_ARM64"
+          DOCKERHUB_DESTINATION="$DOCKERHUB_REPO:$LATEST_TAG-arm64v8"
+          if [ -f "$DOCKERHUB_DOCKEFILE" ]; then
+              sudo docker "${DOCKER_ARGS[@]}" run --rm --privileged multiarch/qemu-user-static:register --reset
+              sudo apt update
+              sudo apt install -y qemu-user-static qemu-user binfmt-support
+              sudo cp /usr/bin/qemu-aarch64-static "$(dirname "$DOCKERHUB_DOCKEFILE")/qemu-aarch64-static"
+              sed -i -e 's/#EnableQEMU //g' "$DOCKERHUB_DOCKEFILE"
+              sudo docker "${DOCKER_ARGS[@]}" build --pull -t "$DOCKERHUB_DESTINATION" -f "$DOCKERHUB_DOCKEFILE" "$NODE_NAME/$NODE_VERSION"
+          else
+              echo "Skipping linuxarm64v8 because $DOCKERHUB_DOCKEFILE is not found"
+          fi
+
       - name: Publish image
+        if: github.event_name == 'push'
+        env:
+          DOCKERHUB_USER: ${{ secrets.DOCKERHUB_USER }}
+          DOCKERHUB_PASS: ${{ secrets.DOCKERHUB_PASS }}
         shell: bash
         run: |
           source ".github/scripts/parse-tag.sh"
@@ -92,7 +172,32 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Set up QEMU
+        if: github.event_name == 'workflow_dispatch'
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        if: github.event_name == 'workflow_dispatch'
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build image
+        if: github.event_name == 'workflow_dispatch'
+        shell: bash
+        run: |
+          source ".github/scripts/parse-tag.sh"
+          DOCKERHUB_DOCKEFILE="$DOCKERHUB_DOCKEFILE_BUILDX"
+          DOCKERHUB_DESTINATION="$DOCKERHUB_REPO:$LATEST_TAG"
+          if [ -f "$DOCKERHUB_DOCKEFILE" ]; then
+              docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7 -f "$DOCKERHUB_DOCKEFILE" -t "$DOCKERHUB_DESTINATION" "$NODE_NAME/$NODE_VERSION"
+          else
+              echo "Skipping buildx because $DOCKERHUB_DOCKEFILE_BUILDX is not found"
+          fi
+
       - name: Publish image
+        if: github.event_name == 'push'
+        env:
+          DOCKERHUB_USER: ${{ secrets.DOCKERHUB_USER }}
+          DOCKERHUB_PASS: ${{ secrets.DOCKERHUB_PASS }}
         shell: bash
         run: |
           source ".github/scripts/parse-tag.sh"
@@ -106,6 +211,7 @@ jobs:
 
   publish_multiarch:
     name: Publish multi-arch manifest
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     needs:
       - publish_linuxamd64
@@ -116,6 +222,9 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Publish manifest
+        env:
+          DOCKERHUB_USER: ${{ secrets.DOCKERHUB_USER }}
+          DOCKERHUB_PASS: ${{ secrets.DOCKERHUB_PASS }}
         shell: bash
         run: |
           source ".github/scripts/parse-tag.sh"
