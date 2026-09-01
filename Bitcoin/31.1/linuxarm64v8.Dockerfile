@@ -3,8 +3,7 @@ FROM debian:bookworm-slim as builder
 
 RUN set -ex \
 	&& apt-get update \
-	&& apt-get install -qq --no-install-recommends ca-certificates dirmngr gosu wget
-RUN apt-get install -qq --no-install-recommends qemu-user-static binfmt-support
+	&& apt-get install -qq --no-install-recommends ca-certificates dirmngr gosu wget qemu-user-static binfmt-support
 
 ENV BITCOIN_VERSION 31.1
 ENV BITCOIN_URL https://bitcoincore.org/bin/bitcoin-core-${BITCOIN_VERSION}/bitcoin-${BITCOIN_VERSION}-aarch64-linux-gnu.tar.gz

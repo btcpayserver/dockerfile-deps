@@ -129,7 +129,7 @@ if [[ "$1" == "bitcoin-cli" || "$1" == "bitcoin-tx" || "$1" == "bitcoind" || "$1
 	chown -h bitcoin:bitcoin /home/bitcoin/.bitcoin
 	rm -f /home/bitcoin/.bitcoin/settings.json
 
-	if [[ "${need_migrate}" == "true" ]]; then
+	if [[ "${need_migrate}" == "true" && "$1" == "bitcoind" ]]; then
 		echo "Migrating legacy bitcoin wallet..."
 		gosu bitcoin "$@" &
 		BITCOIN_PID=$!
