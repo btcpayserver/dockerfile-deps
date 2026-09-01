@@ -18,7 +18,7 @@ env:
 
 jobs:
   publish_images:
-    name: Publish ${{ matrix.name }}
+    name: Publish ${{ inputs.tag || github.ref_name }} (${{ matrix.name }})
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
