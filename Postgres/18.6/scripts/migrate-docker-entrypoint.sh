@@ -16,7 +16,11 @@ PGMOUNT="/var/lib/postgresql"
 export PGDATAOLD=""
 
 if [[ -f "$PGMOUNT/PG_VERSION" ]]; then
-    CURRENT_PGVERSION="$(cat $PGMOUNT/PG_VERSION)"
+    CURRENT_PGVERSION="$(cat "$PGMOUNT/PG_VERSION")"
+    if ! [[ "$CURRENT_PGVERSION" =~ ^[0-9]+([.][0-9]+)?$ ]]; then
+        echo "Error: Invalid PostgreSQL version marker: $CURRENT_PGVERSION"
+        exit 1
+    fi
     PGDATAOLD="$PGMOUNT/${CURRENT_PGVERSION}/docker"
     mkdir -p "$PGDATAOLD"
 
@@ -30,7 +34,11 @@ if [[ -f "$PGMOUNT/PG_VERSION" ]]; then
 
 elif [[ -f "$PGMOUNT/PG_MIGRATING_FROM_VERSION" ]]; then
     echo "Previous migration failed"
-    CURRENT_PGVERSION="$(cat $PGMOUNT/PG_MIGRATING_FROM_VERSION)"
+    CURRENT_PGVERSION="$(cat "$PGMOUNT/PG_MIGRATING_FROM_VERSION")"
+    if ! [[ "$CURRENT_PGVERSION" =~ ^[0-9]+([.][0-9]+)?$ ]]; then
+        echo "Error: Invalid PostgreSQL version marker: $CURRENT_PGVERSION"
+        exit 1
+    fi
     PGDATAOLD="$PGMOUNT/${CURRENT_PGVERSION}/docker"
 fi
 
@@ -94,7 +102,7 @@ if [[ "$CURRENT_PGVERSION" != "$EXPECTED_PGVERSION" ]] && \
         cat "$PGMOUNT/pg_upgrade_server.log"
         if [ -f "$PGDATAOLD/PG_VERSION" ] && [ -f "$PGDATANEW/PG_VERSION" ]; then
             echo "Cleaning up the new cluster"
-            rm -r $PGDATANEW/*
+            rm -rf -- "${PGDATANEW:?PGDATANEW must be set}"/*
         fi
 
         if grep -Fq 'must be superuser to connect in binary upgrade mode' "$PGMOUNT/pg_upgrade_server.log"; then
@@ -116,10 +124,10 @@ SQL
     echo "pg_upgrade ran successfully, creating NEED_POST_MIGRATE, removing PG_MIGRATING_FROM_VERSION"
     touch "$PGMOUNT/NEED_POST_MIGRATE"
     rm "$PGMOUNT/PG_MIGRATING_FROM_VERSION"
-    rm $PGDATANEW/*.conf
-    mv $PGDATAOLD/*.conf "$PGDATANEW"
+    rm -f -- "${PGDATANEW:?PGDATANEW must be set}"/*.conf
+    mv "$PGDATAOLD"/*.conf "$PGDATANEW"
 
-    rm -rf "$PGMOUNT/${CURRENT_PGVERSION}"
+    rm -rf -- "$PGMOUNT/${CURRENT_PGVERSION:?CURRENT_PGVERSION must be set}"
 
     unset CURRENT_PGVERSION
     unset PGPASSWORD
