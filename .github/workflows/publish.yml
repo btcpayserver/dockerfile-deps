@@ -1,25 +1,22 @@
-name: Publish Docker Images
-run-name: ${{ inputs.tag || github.ref_name }} (${{ github.event_name == 'workflow_dispatch' && 'Build Only' || 'Build and Push' }})
+name: Build and Publish
+run-name: ${{ github.ref_name }} (Build and Publish)
 
 on:
   push:
     tags:
       - '*/*'
-  workflow_dispatch:
-    inputs:
-      tag:
-        description: Image tag in Project/version format
-        required: true
-        type: string
 
 env:
   DOCKER_HOST: unix:///var/run/docker.sock
   DOCKER_CLI_EXPERIMENTAL: enabled
-  CI_TAG: ${{ inputs.tag || github.ref_name }}
+  CI_TAG: ${{ github.ref_name }}
+
+permissions:
+  contents: read
 
 jobs:
   publish_images:
-    name: Publish ${{ inputs.tag || github.ref_name }} (${{ matrix.name }})
+    name: Publish
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -35,22 +32,10 @@ jobs:
             name: buildx image
     steps:
       - uses: actions/checkout@v4
-
-      - name: Set up QEMU
-        if: github.event_name == 'workflow_dispatch' && matrix.image == 'buildx'
-        uses: docker/setup-qemu-action@v3
-
-      - name: Set up Docker Buildx
-        if: github.event_name == 'workflow_dispatch' && matrix.image == 'buildx'
-        uses: docker/setup-buildx-action@v3
-
-      - name: Build image
-        if: github.event_name == 'workflow_dispatch'
-        shell: bash
-        run: .github/scripts/run-image.sh "${{ matrix.image }}" build
+        with:
+          persist-credentials: false
 
       - name: Publish image
-        if: github.event_name == 'push'
         env:
           DOCKERHUB_USER: ${{ secrets.DOCKERHUB_USER }}
           DOCKERHUB_PASS: ${{ secrets.DOCKERHUB_PASS }}
@@ -59,11 +44,12 @@ jobs:
 
   publish_multiarch:
     name: Publish multi-arch manifest
-    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     needs: publish_images
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Publish manifest
         env:

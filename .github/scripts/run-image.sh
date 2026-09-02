@@ -63,10 +63,18 @@ elif [ "$IMAGE_TYPE" = "linuxarm64v8" ]; then
 fi
 
 if [ "$MODE" = "publish" ]; then
+    echo "Pushing $DOCKERHUB_DOCKEFILE to dockerhub repository $DOCKERHUB_DESTINATION"
+    sudo docker $DOCKER_OPTIONS login --username="$DOCKERHUB_USER" --password="$DOCKERHUB_PASS"
     if [ "$IMAGE_TYPE" = "buildx" ]; then
-        source ".github/scripts/push-image-buildx.sh"
+        sudo docker buildx create --use
+        DOCKER_BUILDX_OPTS="--platform linux/amd64,linux/arm64,linux/arm/v7 --push"
+        sudo docker buildx build $DOCKER_BUILDX_OPTS \
+            -f "$DOCKERHUB_DOCKEFILE" \
+            -t "$DOCKERHUB_DESTINATION" \
+            "$NODE_NAME/$NODE_VERSION"
     else
-        source ".github/scripts/push-image.sh"
+        sudo docker $DOCKER_OPTIONS build --pull -t "$DOCKERHUB_DESTINATION" -f "$DOCKERHUB_DOCKEFILE" "$NODE_NAME/$NODE_VERSION"
+        sudo docker $DOCKER_OPTIONS push "$DOCKERHUB_DESTINATION"
     fi
 elif [ "$IMAGE_TYPE" = "buildx" ]; then
     docker buildx build \
