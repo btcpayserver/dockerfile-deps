@@ -106,6 +106,31 @@ if [[ "$1" == "bitcoin-cli" || "$1" == "bitcoin-tx" || "$1" == "bitcoind" || "$1
 	rpcallowip=::/0
 	${BITCOIN_EXTRA_ARGS}
 	EOF
+
+	if [[ "${BITCOIN_RPCUSERS}" ]]; then
+		RPC_USERS_DIR="$BITCOIN_DATA/RPRCUsers"
+		mkdir -p "$RPC_USERS_DIR"
+		IFS=',' read -ra RPC_USERS <<< "${BITCOIN_RPCUSERS}"
+		for RPC_USER in "${RPC_USERS[@]}"; do
+			if [[ ! "$RPC_USER" =~ ^[A-Za-z0-9._@-]+$ ]]; then
+				echo "Invalid RPC username: $RPC_USER" >&2
+				exit 1
+			fi
+
+			RPC_PASSWORD_FILE="$RPC_USERS_DIR/$RPC_USER"
+			if [[ ! -f "$RPC_PASSWORD_FILE" ]]; then
+				RPC_PASSWORD=$(xxd -p -c 32 -l 32 /dev/urandom)
+				(umask 077; printf '%s' "$RPC_PASSWORD" > "$RPC_PASSWORD_FILE")
+			else
+				RPC_PASSWORD=$(< "$RPC_PASSWORD_FILE")
+			fi
+
+			RPC_SALT=$(xxd -p -c 16 -l 16 /dev/urandom)
+			RPC_HMAC=$(printf '%s' "$RPC_PASSWORD" | openssl dgst -sha256 -hmac "$RPC_SALT")
+			RPC_HMAC=${RPC_HMAC##* }
+			printf 'rpcauth=%s:%s$%s\n' "$RPC_USER" "$RPC_SALT" "$RPC_HMAC" >> "$BITCOIN_DATA/bitcoin.conf"
+		done
+	fi
 	chown bitcoin:bitcoin "$BITCOIN_DATA/bitcoin.conf"
 
 	if [[ "${BITCOIN_TORCONTROL}" ]]; then

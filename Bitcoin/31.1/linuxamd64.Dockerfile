@@ -26,7 +26,7 @@ ARG BITCOIN_USER_ID=999
 ARG BITCOIN_GROUP_ID=999
 
 RUN apt-get update && \
-    apt-get install -qq --no-install-recommends xxd && \
+    apt-get install -qq --no-install-recommends openssl xxd && \
     rm -rf /var/lib/apt/lists/*
 RUN chmod +x /usr/local/bin/gosu && groupadd -r -g $BITCOIN_GROUP_ID bitcoin && useradd -r -m -u $BITCOIN_USER_ID -g bitcoin bitcoin
 
