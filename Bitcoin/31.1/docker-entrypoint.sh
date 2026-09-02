@@ -108,7 +108,7 @@ if [[ "$1" == "bitcoin-cli" || "$1" == "bitcoin-tx" || "$1" == "bitcoind" || "$1
 	EOF
 
 	if [[ "${BITCOIN_RPCUSERS}" ]]; then
-		RPC_USERS_DIR="$BITCOIN_DATA/RPRCUsers"
+		RPC_USERS_DIR="$BITCOIN_DATA/RPCUsers"
 		mkdir -p "$RPC_USERS_DIR"
 		IFS=',' read -ra RPC_USERS <<< "${BITCOIN_RPCUSERS}"
 		for RPC_USER in "${RPC_USERS[@]}"; do

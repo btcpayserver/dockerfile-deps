@@ -23,13 +23,9 @@ jobs:
       matrix:
         include:
           - image: linuxamd64
-            name: linux/amd64
           - image: linuxarm32v7
-            name: linux/arm/v7
           - image: linuxarm64v8
-            name: linux/arm64/v8
           - image: buildx
-            name: buildx image
     steps:
       - uses: actions/checkout@v4
         with:
