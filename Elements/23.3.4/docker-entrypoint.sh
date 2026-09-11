@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-if [[ "$1" == "elements-cli" || "$1" == "elements-tx" || "$1" == "elementsd" || "$1" == "test_elements" ]]; then
+if [[ "$1" == "elements-cli" || "$1" == "elementsd" ]]; then
 	mkdir -p "$ELEMENTS_DATA"
 
 	CONFIG_PREFIX=""
@@ -49,12 +49,16 @@ if [[ "$1" == "elements-cli" || "$1" == "elements-tx" || "$1" == "elementsd" || 
 
 	if [[ "${ELEMENTS_TORCONTROL}" ]]; then
 		# Because elementsd only accept torcontrol= host as an ip only, we resolve it here and add to config
-		TOR_CONTROL_HOST=$(echo ${ELEMENTS_TORCONTROL} | cut -d ':' -f 1)
-		TOR_CONTROL_PORT=$(echo ${ELEMENTS_TORCONTROL} | cut -d ':' -f 2)
+		TOR_CONTROL_HOST=$(echo "${ELEMENTS_TORCONTROL}" | cut -d ':' -f 1)
+		TOR_CONTROL_PORT=$(echo "${ELEMENTS_TORCONTROL}" | cut -d ':' -f 2)
 		if [[ "$TOR_CONTROL_HOST" ]] && [[ "$TOR_CONTROL_PORT" ]]; then
-			TOR_IP=$(getent hosts $TOR_CONTROL_HOST | cut -d ' ' -f 1)
+			TOR_IP=$(getent hosts "$TOR_CONTROL_HOST" | awk 'NR == 1 { print $1; exit }')
+			if [[ -z "$TOR_IP" ]]; then
+				echo "Cannot resolve ELEMENTS_TORCONTROL host: $TOR_CONTROL_HOST" >&2
+				exit 1
+			fi
 			echo "torcontrol=$TOR_IP:$TOR_CONTROL_PORT" >> "$ELEMENTS_DATA/elements.conf"
-			echo "Added "torcontrol=$TOR_IP:$TOR_CONTROL_PORT" to $ELEMENTS_DATA/elements.conf"
+			echo "Added torcontrol=$TOR_IP:$TOR_CONTROL_PORT to $ELEMENTS_DATA/elements.conf"
 		else
 			echo "Invalid ELEMENTS_TORCONTROL"
 		fi

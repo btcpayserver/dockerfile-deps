@@ -1,5 +1,5 @@
 # Use manifest image which support all architecture
-FROM debian:bookworm-slim as builder
+FROM debian:trixie-slim as builder
 
 RUN set -ex \
 	&& apt-get update \
@@ -22,7 +22,7 @@ RUN set -ex \
 	&& echo "c3805a85d17f4454c23d7059bcb97e1ec1af272b90126e79ed002342de08389b gosu" | sha256sum -c -
 
 # Making sure the builder build an arm image despite being x64
-FROM --platform=arm64 debian:bookworm-slim
+FROM --platform=arm64 debian:trixie-slim
 
 COPY --from=builder "/tmp/bin" /usr/local/bin
 COPY --from=builder /usr/bin/qemu-aarch64-static /usr/bin/qemu-aarch64-static
