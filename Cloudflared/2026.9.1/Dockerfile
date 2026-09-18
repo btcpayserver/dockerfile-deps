@@ -4,7 +4,7 @@ ARG TARGETOS
 ARG TARGETARCH
 ENV GO111MODULE=on \
     CGO_ENABLED=0 \
-    GOPROXY=https://athens.cfdata.org|https://proxy.golang.org|direct \
+    GOPROXY=https://proxy.golang.org|direct \
     TARGET_GOOS=${TARGETOS} \
     TARGET_GOARCH=${TARGETARCH} \
     CONTAINER_BUILD=1 \
