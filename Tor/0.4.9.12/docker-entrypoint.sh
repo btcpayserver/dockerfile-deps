@@ -25,6 +25,10 @@ fi
 
 chown -R tor "$(dirname $TOR_CONFIG)"
 
+if [ -f "${TOR_PASSWORD_FILE}" ]; then
+    TOR_PASSWORD="$(cat "$TOR_PASSWORD_FILE")"
+fi
+
 if ! [ -z "${TOR_PASSWORD}" ]; then
     TOR_PASSWORD_HASH="$(gosu tor tor --hash-password "$TOR_PASSWORD")"
     echo "HashedControlPassword $TOR_PASSWORD_HASH" >> "$TOR_CONFIG"
