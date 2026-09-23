@@ -29,7 +29,7 @@ RUN { \
   echo 'upload_max_filesize=100M'; \
 } > /usr/local/etc/php/conf.d/uploads.ini
 
-COPY docker-entrypoint.sh /usr/local/bin/woocommerce-entrypoint.sh
-ENTRYPOINT ["woocommerce-entrypoint.sh"]
+COPY docker-entrypoint.sh /usr/local/bin/
+ENTRYPOINT ["docker-entrypoint.sh"]
 CMD ["apache2-foreground"]
 VOLUME ["/var/www/html"]

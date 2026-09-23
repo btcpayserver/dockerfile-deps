@@ -59,3 +59,25 @@ jobs:
       - name: Build image
         shell: bash
         run: .github/scripts/run-image.sh "${{ matrix.image }}" build
+
+      - name: Verify WooCommerce startup and upgrades
+        if: startsWith(env.CI_TAG, 'WooCommerce/') && (matrix.image == 'linuxamd64' || matrix.image == 'linuxarm64v8')
+        env:
+          IMAGE_TYPE: ${{ matrix.image }}
+        shell: bash
+        run: |
+          source .github/scripts/parse-tag.sh
+          test_dir="WooCommerce/$NODE_VERSION/tests"
+          if [ ! -f "$test_dir/upgrade.sh" ] || [ ! -f "$test_dir/startup.sh" ]; then
+            echo "No compatibility tests provided for WooCommerce/$NODE_VERSION"
+            exit 0
+          fi
+          case "$IMAGE_TYPE" in
+            linuxamd64) target_arch=amd64; image_suffix=amd64 ;;
+            linuxarm64v8) target_arch=arm64; image_suffix=arm64v8 ;;
+          esac
+          export UPGRADE_IMAGE="$DOCKERHUB_REPO:$LATEST_TAG-$image_suffix"
+          bash "$test_dir/startup.sh" "$target_arch"
+          for previous_version in 3.1.0 10.2.2; do
+            bash "$test_dir/upgrade.sh" "$previous_version" "$target_arch"
+          done
