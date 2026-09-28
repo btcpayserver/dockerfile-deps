@@ -1,0 +1,4 @@
+# Only the entrypoint and optional CI-provided emulator belong in the build context.
+*
+!docker-entrypoint.sh
+!qemu-aarch64-static
