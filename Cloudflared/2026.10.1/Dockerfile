@@ -2,10 +2,9 @@ FROM --platform=$BUILDPLATFORM golang:1.27.2 AS builder
 
 ARG TARGETOS
 ARG TARGETARCH
-ARG GOPROXY=https://athens.cfdata.org|https://proxy.golang.org|direct
 ENV GO111MODULE=on \
     CGO_ENABLED=0 \
-    GOPROXY=${GOPROXY} \
+    GOPROXY=https://proxy.golang.org|direct \
     TARGET_GOOS=${TARGETOS} \
     TARGET_GOARCH=${TARGETARCH} \
     CONTAINER_BUILD=1 \
