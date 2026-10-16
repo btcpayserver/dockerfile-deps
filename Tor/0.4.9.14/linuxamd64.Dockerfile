@@ -87,5 +87,5 @@ COPY docker-entrypoint.sh /entrypoint.sh
 EXPOSE 9050 9051
 ENV TOR_CONFIG=/usr/local/etc/tor/torrc
 
-ENTRYPOINT ["./entrypoint.sh"]
+ENTRYPOINT ["/entrypoint.sh"]
 CMD ["tor"]

@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 
-mkdir -p "$(dirname $TOR_CONFIG)"
+mkdir -p "$(dirname "$TOR_CONFIG")"
 
 mkdir -p "$TOR_DATA"
 chown -R tor "$TOR_DATA"
@@ -23,7 +23,7 @@ if ! [ -z "${TOR_ADDITIONAL_CONFIG}" ]; then
     echo "Added '%include $TOR_ADDITIONAL_CONFIG' to tor config"
 fi
 
-chown -R tor "$(dirname $TOR_CONFIG)"
+chown -R tor "$(dirname "$TOR_CONFIG")"
 
 if [ -f "${TOR_PASSWORD_FILE}" ]; then
     TOR_PASSWORD="$(cat "$TOR_PASSWORD_FILE")"

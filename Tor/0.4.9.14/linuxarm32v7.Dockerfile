@@ -107,5 +107,5 @@ RUN  rm -rf /usr/arm-linux-gnueabihf/etc/tor \
    && mkdir -p /usr/local/etc/tor \
    && ln -sfn /usr/local/etc/tor /usr/arm-linux-gnueabihf/etc/tor
 
-ENTRYPOINT ["./entrypoint.sh"]
+ENTRYPOINT ["/entrypoint.sh"]
 CMD ["tor"]

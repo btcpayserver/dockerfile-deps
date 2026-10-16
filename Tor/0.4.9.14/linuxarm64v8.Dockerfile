@@ -103,5 +103,5 @@ RUN rm -rf /usr/aarch64-linux-gnu/etc/tor \
    && mkdir -p /usr/local/etc/tor \
    && ln -sfn /usr/local/etc/tor /usr/aarch64-linux-gnu/etc/tor
 
-ENTRYPOINT ["./entrypoint.sh"]
+ENTRYPOINT ["/entrypoint.sh"]
 CMD ["tor"]
