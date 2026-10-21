@@ -294,7 +294,8 @@ do {
 	}
 } while ($mysql->connect_error);
 
-if (!$mysql->query('CREATE DATABASE IF NOT EXISTS `' . str_replace('`', '``', $dbName) . '`')) {
+// Existing databases may be usable without permission to create them.
+if (!$mysql->select_db($dbName) && !$mysql->query('CREATE DATABASE IF NOT EXISTS `' . str_replace('`', '``', $dbName) . '`')) {
 	fwrite($stderr, "\n" . 'MySQL "CREATE DATABASE" Error: ' . $mysql->error . "\n");
 	$mysql->close();
 	exit(1);
