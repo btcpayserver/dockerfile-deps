@@ -1,0 +1,33 @@
+name: Script tests
+
+on:
+  pull_request:
+    paths:
+      - '.github/scripts/**'
+      - '.github/workflows/scripts.yml'
+      - 'tests/**'
+  push:
+    branches:
+      - master
+    paths:
+      - '.github/scripts/**'
+      - '.github/workflows/scripts.yml'
+      - 'tests/**'
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Check shell syntax
+        run: |
+          for script in .github/scripts/*.sh; do
+            bash -n "$script"
+          done
+      - name: Test manifest publication without publishing
+        run: python3 -m unittest discover -s tests -v
