@@ -46,20 +46,22 @@ if [ ! -f "$DOCKERHUB_DOCKEFILE" ]; then
     exit 0
 fi
 
-if [ "$IMAGE_TYPE" = "linuxarm32v7" ]; then
+if [ "$IMAGE_TYPE" = "linuxarm32v7" ] || [ "$IMAGE_TYPE" = "linuxarm64v8" ]; then
     sudo docker "${DOCKER_ARGS[@]}" run --rm --privileged multiarch/qemu-user-static:register --reset
     if grep "#EnableQEMU" "$DOCKERHUB_DOCKEFILE"; then
-        sudo apt update
-        sudo apt install -y qemu-user-static qemu-user binfmt-support
-        sudo cp /usr/bin/qemu-arm-static "$(dirname "$DOCKERHUB_DOCKEFILE")/qemu-arm-static"
+        if [ "$IMAGE_TYPE" = "linuxarm32v7" ]; then
+            QEMU_BINARY=qemu-arm-static
+        else
+            QEMU_BINARY=qemu-aarch64-static
+        fi
+        QEMU_CONTAINER=$(sudo docker "${DOCKER_ARGS[@]}" create --pull=always multiarch/qemu-user-static:latest)
+        trap 'sudo docker "${DOCKER_ARGS[@]}" rm "$QEMU_CONTAINER" >/dev/null' EXIT
+        sudo docker "${DOCKER_ARGS[@]}" cp "$QEMU_CONTAINER:/usr/bin/$QEMU_BINARY" \
+            "$(dirname "$DOCKERHUB_DOCKEFILE")/$QEMU_BINARY"
+        sudo docker "${DOCKER_ARGS[@]}" rm "$QEMU_CONTAINER" >/dev/null
+        trap - EXIT
         sed -i -e 's/#EnableQEMU //g' "$DOCKERHUB_DOCKEFILE"
     fi
-elif [ "$IMAGE_TYPE" = "linuxarm64v8" ]; then
-    sudo docker "${DOCKER_ARGS[@]}" run --rm --privileged multiarch/qemu-user-static:register --reset
-    sudo apt update
-    sudo apt install -y qemu-user-static qemu-user binfmt-support
-    sudo cp /usr/bin/qemu-aarch64-static "$(dirname "$DOCKERHUB_DOCKEFILE")/qemu-aarch64-static"
-    sed -i -e 's/#EnableQEMU //g' "$DOCKERHUB_DOCKEFILE"
 fi
 
 if [ "$MODE" = "publish" ]; then
