@@ -197,7 +197,7 @@ EOPHP
 			echo "$@" | sed -e 's/[]\/$*.^|[]/\\&/g'
 		}
 		sed_escape_rhs() {
-			echo "$@" | sed -e 's/[\/&]/\\&/g'
+			printf '%s\n' "$1" | sed -e 's#[\\/&]#\\&#g'
 		}
 		php_escape() {
 			local escaped="$(php -r 'var_export(('"$2"') $argv[1]);' -- "$1")"
@@ -260,13 +260,29 @@ $stderr = fopen('php://stderr', 'w');
 //   "hostname:port"
 // https://codex.wordpress.org/Editing_wp-config.php#MySQL_Sockets_or_Pipes
 //   "hostname:unix-socket-path"
-$hostParts = explode(':', getenv('WORDPRESS_DB_HOST'), 2);
-$host = $hostParts[0];
-$socket = isset($hostParts[1]) ? $hostParts[1] : null;
+$host = getenv('WORDPRESS_DB_HOST');
+$socket = null;
 $port = 0;
-if ($socket && is_numeric($socket)) {
-	$port = (int) $socket;
-	$socket = null;
+$socketPosition = strpos($host, ':/');
+if ($socketPosition !== false) {
+	$socket = substr($host, $socketPosition + 1);
+	$host = substr($host, 0, $socketPosition);
+}
+
+// IPv6 ports require brackets to distinguish them from the address.
+if (substr_count($host, ':') > 1) {
+	if (preg_match('/^\[([^\]]+)\](?::([0-9]+))?$/', $host, $matches)) {
+		$host = $matches[1];
+		$port = (int) ($matches[2] ?? 0);
+	}
+	// WordPress also uses brackets when connecting through mysqlnd.
+	if (extension_loaded('mysqlnd')) {
+		$host = '[' . $host . ']';
+	}
+} else {
+	$hostParts = explode(':', $host, 2);
+	$host = $hostParts[0];
+	$port = (int) ($hostParts[1] ?? 0);
 }
 $user = getenv('WORDPRESS_DB_USER');
 $pass = getenv('WORDPRESS_DB_PASSWORD');
