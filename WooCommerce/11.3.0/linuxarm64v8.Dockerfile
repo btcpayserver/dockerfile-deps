@@ -2,7 +2,7 @@ FROM --platform=linux/arm64 wordpress:7.1.5-php8.3-apache
 #EnableQEMU COPY qemu-aarch64-static /usr/bin
 
 ENV WOOCOMMERCE_VERSION=11.3.0
-ENV BTCPAY_PLUGIN_VERSION=2.8.6
+ENV BTCPAY_PLUGIN_VERSION=2.8.9
 ENV WP_CLI_VERSION=2.12.0
 
 RUN set -eux; \
@@ -12,7 +12,7 @@ RUN set -eux; \
     && curl -fL "https://downloads.wordpress.org/plugin/woocommerce.${WOOCOMMERCE_VERSION}.zip" -o /tmp/woocommerce.zip \
     && curl -fL "https://downloads.wordpress.org/plugin/btcpay-greenfield-for-woocommerce.${BTCPAY_PLUGIN_VERSION}.zip" -o /tmp/btcpay.zip \
     && echo 'd9eb1e46df8309eb37b6f7f3fba51480f2a9a00e7feb10b1487592fde39accc6  /tmp/woocommerce.zip' | sha256sum -c - \
-    && echo 'c7b4d9e119bad7db5797de58055c619fd73da7a1f66c87f9153c649105e094c6  /tmp/btcpay.zip' | sha256sum -c - \
+    && echo '9a4c24756ec82fc5b2e6b591696f5c4d6fd837b85d57d98913f62779370076b4  /tmp/btcpay.zip' | sha256sum -c - \
     && unzip -q /tmp/woocommerce.zip -d /usr/src/wordpress/wp-content/plugins \
     && unzip -q /tmp/btcpay.zip -d /usr/src/wordpress/wp-content/plugins \
     && chown -R www-data:www-data /usr/src/wordpress/wp-content/plugins \
